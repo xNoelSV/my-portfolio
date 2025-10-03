@@ -1,7 +1,7 @@
 import "@/app/globals.css";
 import Footer from "@/components/layouts/footer";
 import Header from "@/components/layouts/header";
-import ThemeProvider from "@/components/layouts/theme";
+import ThemeProvider from "@/components/theme";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Toaster } from "sonner";
 
