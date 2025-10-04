@@ -13,7 +13,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-space-grotesk)", ...fontFamily.sans],
+        sans: ["var(--font-roboto-flex)", ...fontFamily.sans],
       },
       typography: {
         quoteless: {

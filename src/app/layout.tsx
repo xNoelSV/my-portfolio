@@ -15,10 +15,10 @@ export const metadata = {
   description: "Noel's portfolio website",
 };
 
-const space_grotesk = Roboto_Flex({
+const roboto_flex = Roboto_Flex({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-space-grotesk",
+  variable: "--font-roboto-flex",
 });
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
           `mx-auto min-h-screen max-w-3xl antialiased 
           text-black 
            dark:bg-zinc-950 dark:text-gray-100`,
-          space_grotesk.className
+          roboto_flex.className
         )}
       >
         <ThemeProvider

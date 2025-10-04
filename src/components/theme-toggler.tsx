@@ -1,14 +1,16 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import Button from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "./icons/icons";
+import { Button } from "@/components/ui/button";
 
 export function ThemeToggler() {
   const { theme, setTheme } = useTheme();
 
   return (
     <Button
+      variant="ghost"
+      size="sm"
       onClick={() => {
         if (theme === "dark") {
           setTheme("light");
