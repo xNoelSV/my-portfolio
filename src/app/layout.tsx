@@ -5,6 +5,7 @@ import ThemeProvider from "@/components/theme";
 import { cn } from "@/lib/utils";
 import { Roboto_Flex } from "next/font/google";
 import { Toaster } from "sonner";
+import { TailwindIndicator } from "./tailwind-indicator";
 
 export const metadata = {
   title: {
@@ -47,6 +48,7 @@ export default function RootLayout({
             <Footer />
             <Toaster position="bottom-center" richColors />
           </main>
+          <TailwindIndicator />
         </ThemeProvider>
       </body>
     </html>
