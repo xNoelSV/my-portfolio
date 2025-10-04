@@ -25,7 +25,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="w-full p-4 mt-5">
+      <header className="w-full p-4 mt-5 mb-5">
         <nav className="flex w-full items-center justify-between">
           <div className="flex items-center space-x-8">
             {Object.entries(navItems).map(([path, { name }]) => {

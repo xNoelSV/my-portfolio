@@ -1,0 +1,4 @@
+TODO:
+- og_photo with canva
+- Projects site
+- Blog site
