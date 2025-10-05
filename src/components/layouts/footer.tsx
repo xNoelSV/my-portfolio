@@ -11,7 +11,7 @@ export function Footer() {
   const isHomePage = pathname === "/";
 
   return (
-    <footer className="mt-16 space-y-6">
+    <footer className="mt-16 mb-4 space-y-6">
       <Separator />
 
       <div className="flex flex-col items-center space-y-4 text-center">
@@ -31,7 +31,8 @@ export function Footer() {
 
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()}{" "}
+            {new Date().getFullYear()}
+            {". "}
             <a
               href={siteMetadata.social.linkedinLink}
               target="_blank"
@@ -40,8 +41,16 @@ export function Footer() {
             >
               Noel Sariñena
             </a>
-            . All rights reserved.
           </p>
+
+          <a
+            href={siteMetadata.repo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block hover:text-foreground transition-colors underline underline-offset-4"
+          >
+            View source code
+          </a>
         </div>
       </div>
     </footer>

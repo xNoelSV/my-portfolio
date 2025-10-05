@@ -7,8 +7,17 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Download } from "lucide-react";
 import { LINKS } from "@/data/links";
 import { Separator } from "@/components/ui/separator";
+import { allBlogs } from ".contentlayer/generated";
+import { BlogListItem } from "@/components/blog/blog-item";
 
 export default function HomePage() {
+  const blogs = allBlogs
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    )
+    .slice(0, 2);
+
   return (
     <div className="space-y-12">
       <section className="space-y-6">
@@ -79,6 +88,21 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* <Separator />
+
+      <section className="space-y-2">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          About my experience
+        </h2>
+        <div className="space-y-4 text-muted-foreground leading-relaxed">
+          <h3 className="mt-5 text-lg font-bold racking-tight">
+            Software Engineer at Everis (an NTT DATA Company) - June 2023 to
+            Present
+          </h3>
+          <p></p>
+        </div>
+      </section> */}
+
       <Separator />
 
       <section className="space-y-2">
@@ -92,6 +116,24 @@ export default function HomePage() {
               <ArrowRight className="h-4 w-4 ml-2" />
             </Link>
           </Button>
+        </div>
+
+        <div className="max-w-4xl divide-y divide-border/40">
+          {!blogs.length ? (
+            <p className="flex items-center justify-center mt-5 text-muted-foreground leading-relaxed">
+              No blogs found.
+            </p>
+          ) : (
+            blogs.map((blog) => (
+              <Link
+                key={blog.slug}
+                href={`/blog/${blog.slug}`}
+                className="block hover:bg-muted/30 transition-colors duration-200 rounded-lg -mx-4 px-4"
+              >
+                <BlogListItem blog={blog} />
+              </Link>
+            ))
+          )}
         </div>
       </section>
     </div>
