@@ -1,7 +1,7 @@
 import "./global.css";
 import Footer from "@/components/layouts/footer";
 import Header from "@/components/layouts/header";
-import ThemeProvider from "@/components/theme";
+import { ThemeProvider } from "@/components/theme";
 import { cn } from "@/lib/utils";
 import { Roboto_Flex } from "next/font/google";
 import { Toaster } from "sonner";

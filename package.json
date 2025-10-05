@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --turbopack",
+    "build": "contentlayer2 build && next build --turbopack",
     "build:contentlayer": "contentlayer2 build",
     "start": "next start",
     "lint": "eslint"
