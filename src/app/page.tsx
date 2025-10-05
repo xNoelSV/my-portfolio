@@ -8,7 +8,7 @@ import { ArrowRight, Download } from "lucide-react";
 import { LINKS } from "@/data/links";
 import { Separator } from "@/components/ui/separator";
 import { allBlogs } from ".contentlayer/generated";
-import { BlogListItem } from "@/components/blog/blog-item";
+import { BlogListItem } from "@/components/blog/blog-list-item";
 
 export default function HomePage() {
   const blogs = allBlogs
