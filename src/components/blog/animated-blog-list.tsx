@@ -43,8 +43,8 @@ export function AnimatedBlogList({ posts }: AnimatedBlogListProps) {
       <div className="text-center py-16">
         <p className="text-muted-foreground">
           {searchQuery
-            ? `No articles found matching "${searchQuery}"`
-            : "No articles found"}
+            ? `No articles found matching "${searchQuery}".`
+            : "No articles found."}
         </p>
       </div>
     );

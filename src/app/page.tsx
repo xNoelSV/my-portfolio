@@ -121,7 +121,7 @@ export default function HomePage() {
         <div className="max-w-4xl divide-y divide-border/40">
           {!blogs.length ? (
             <p className="flex items-center justify-center mt-5 text-muted-foreground leading-relaxed">
-              No blogs found.
+              No articles found.
             </p>
           ) : (
             blogs.map((blog) => (
