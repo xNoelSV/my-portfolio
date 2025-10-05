@@ -6,7 +6,7 @@ import { generatePageMetadata } from "@/data/seo";
 import { SearchInput } from "@/components/blog/search-input";
 
 export const metadata = generatePageMetadata({
-  title: "Blog",
+  title: "My own blog",
   description:
     "Explore my personal blog where I share insights, discoveries, and thoughts on technology and life.",
 });

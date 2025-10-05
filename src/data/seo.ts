@@ -5,7 +5,6 @@ interface OwnProps {
   title: string;
   description?: string;
   image?: string;
-  [key: string]: any;
 }
 
 export function generatePageMetadata({
@@ -22,7 +21,7 @@ export function generatePageMetadata({
       url: "./",
       siteName: siteMetadata.title,
       images: image ? [image] : [siteMetadata.socialBanner],
-      locale: "en_US",
+      locale: "es_ES",
       type: "website",
     },
     twitter: {
