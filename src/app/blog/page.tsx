@@ -1,9 +1,9 @@
 import { AnimatedBlogList } from "@/components/blog/animated-blog-list";
-import { Pagination } from "@/components/blog/pagination";
 import { allBlogs } from "contentlayer/generated";
 import { ENV } from "@/lib/env";
 import { generatePageMetadata } from "@/data/seo";
 import { SearchInput } from "@/components/blog/search-input";
+import { Pagination } from "@/components/pagination/pagination";
 
 export const metadata = generatePageMetadata({
   title: "My own blog",

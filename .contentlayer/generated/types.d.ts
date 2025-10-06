@@ -30,15 +30,17 @@ export type Project = {
   _raw: Local.RawDocumentData
   type: 'Project'
   title: string
-  date: IsoDateTimeString
+  publishedAt: string
   summary: string
   image: string
   tags: string[]
   projectUrl?: string | undefined
   githubUrl?: string | undefined
+  draft: boolean
   /** MDX file body */
   body: MDX
-  url: string
+  slug: string
+  readingTime: json
 }  
 
 /** Nested types */
