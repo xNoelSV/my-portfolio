@@ -2,21 +2,24 @@
 
 import { motion } from "framer-motion";
 import { ProjectCard } from "./project-card";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Github, ExternalLink } from "lucide-react";
 import { Project } from "contentlayer/generated";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 type AnimatedProjectsListProps = {
   projects: Array<
-    Pick<Project, "readingTime" | "slug" | "title" | "summary" | "publishedAt">
+    Pick<
+      Project,
+      | "readingTime"
+      | "slug"
+      | "title"
+      | "summary"
+      | "publishedAt"
+      | "image"
+      | "tags"
+      | "githubUrl"
+      | "projectUrl"
+    >
   >;
 };
 
@@ -51,8 +54,8 @@ export function AnimatedProjectsList({ projects }: AnimatedProjectsListProps) {
       <div className="text-center py-16">
         <p className="text-muted-foreground">
           {searchQuery
-            ? `No articles found matching "${searchQuery}".`
-            : "No articles found."}
+            ? `No projects found matching "${searchQuery}".`
+            : "No projects found."}
         </p>
       </div>
     );
@@ -63,10 +66,14 @@ export function AnimatedProjectsList({ projects }: AnimatedProjectsListProps) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="grid gap-6 md:grid-cols-2"
+      className="columns-1 md:columns-2 gap-6 space-y-6"
     >
       {projects.map((project, idx) => (
-        <motion.div key={idx} variants={itemVariants}>
+        <motion.div
+          key={idx}
+          variants={itemVariants}
+          className="break-inside-avoid mb-6"
+        >
           <ProjectCard project={project} />
         </motion.div>
       ))}

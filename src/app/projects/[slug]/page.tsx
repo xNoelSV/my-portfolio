@@ -75,9 +75,9 @@ export default async function Blog(props: {
   return (
     <article className="space-y-8">
       <Button variant="ghost" size="sm" asChild className="mb-4">
-        <Link href="/blog">
+        <Link href="/projects">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to blog
+          Back to projects
         </Link>
       </Button>
 

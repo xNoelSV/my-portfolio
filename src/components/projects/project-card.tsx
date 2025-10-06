@@ -1,7 +1,3 @@
-import { GitHubIcon, LinkIcon } from "@/components/icons";
-import { SocialLink } from "@/components/social-link";
-import { WebApp } from "@/data/projects";
-import { ZoomableImage } from "./zoomable-image";
 import {
   Card,
   CardContent,
@@ -10,20 +6,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Link } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Project } from "contentlayer/generated";
+/* import { GitHubIcon } from "@/components/icons/icons"; */
+import { ZoomableImage } from "@/components/ui/zoomable-image";
 
-type Props = {
-  project: WebApp;
-};
+type ProjectCardProps = Pick<
+  Project,
+  | "slug"
+  | "image"
+  | "title"
+  | "summary"
+  | "publishedAt"
+  | "githubUrl"
+  | "projectUrl"
+  | "tags"
+>;
 
-export const ProjectCard = ({ project }: Props) => {
+export const ProjectCard = ({ project }: { project: ProjectCardProps }) => {
   return (
-    <Card className="group overflow-hidden transition-all duration-500 hover:shadow-xl  h-full flex flex-col">
+    <Card className="group overflow-hidden transition-all duration-500 hover:shadow-xl dark:hover:shadow-muted/30 h-full flex flex-col">
       <div className=" relative cursor-pointer">
         <ZoomableImage
-          src={project.thumbnail}
+          src={project.image}
           alt={`Screenshot of ${project.title}`}
           width={0}
           height={0}
@@ -36,7 +43,7 @@ export const ProjectCard = ({ project }: Props) => {
           {project.title}
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed mt-2">
-          {project.description}
+          {project.summary}
         </CardDescription>
       </CardHeader>
 
@@ -63,7 +70,7 @@ export const ProjectCard = ({ project }: Props) => {
             className="flex-1 hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <a
-              href={project.repo}
+              href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2"
@@ -72,7 +79,7 @@ export const ProjectCard = ({ project }: Props) => {
               Code
             </a>
           </Button>
-          {project.demo && (
+          {project.projectUrl && (
             <Button
               variant="outline"
               size="sm"
@@ -80,7 +87,7 @@ export const ProjectCard = ({ project }: Props) => {
               className="flex-1 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <a
-                href={project.demo}
+                href={project.projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2"
@@ -91,6 +98,14 @@ export const ProjectCard = ({ project }: Props) => {
             </Button>
           )}
         </div>
+      </CardFooter>
+      <CardFooter className="-mt-2 w-full flex justify-end">
+        <a href={`/projects/${project.slug}`}>
+          <div className="flex items-center gap-2 text-sm font-medium text-primary hover:gap-3 transition-all duration-200">
+            <span>More information</span>
+            <ArrowRight className="h-4 w-4" />
+          </div>
+        </a>
       </CardFooter>
     </Card>
   );

@@ -15,7 +15,7 @@ export const metadata = generatePageMetadata({
 const isProd = ENV.NODE_ENV === "production";
 const BLOG_POSTS_PER_PAGE = 6;
 
-export default async function Blog({
+export default async function BlogPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
