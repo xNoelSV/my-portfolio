@@ -9,6 +9,7 @@ export const metadata = generatePageMetadata({
   title: "My own blog",
   description:
     "Explore my personal blog where I share insights, discoveries, and thoughts on technology and life.",
+  canonical: "/blog",
 });
 
 const isProd = ENV.NODE_ENV === "production";
