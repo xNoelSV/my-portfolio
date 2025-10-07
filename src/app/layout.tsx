@@ -8,8 +8,6 @@ import { Toaster } from "sonner";
 import { TailwindIndicator } from "./tailwind-indicator";
 import { Metadata } from "next";
 import { siteMetadata } from "@/data/siteMetadata";
-import { Metadata } from "next";
-import { siteMetadata } from "@/data/siteMetadata";
 import Head from "@/app/head";
 
 const roboto_flex = Roboto_Flex({

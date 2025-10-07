@@ -6,7 +6,7 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Pagination } from "@/components/pagination/pagination";
 
 export const metadata = generatePageMetadata({
-  title: "My own blog",
+  title: "Blog",
   description:
     "Explore my personal blog where I share insights, discoveries, and thoughts on technology and life.",
   canonical: "/blog",
