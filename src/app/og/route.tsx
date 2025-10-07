@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       ? "Projects"
       : searchParams.has("type") && searchParams.get("type") === "blog"
       ? "Blog"
-      : undefined;
+      : "My Portfolio";
 
     const robotoFlex = await fetch(
       new URL("../../../public/_static/fonts/RobotoFlex.ttf", import.meta.url)
