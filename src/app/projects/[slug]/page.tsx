@@ -25,7 +25,13 @@ export async function generateMetadata(props: {
   // Find by the computed `slug` which matches the route param
   const project = allProjects.find((project) => project.slug === params.slug);
   if (!project) {
-    return;
+    return {
+      title: "Project not found",
+      description: "The requested project was not found.",
+      alternates: {
+        canonical: `${siteMetadata.siteUrl}/projects`,
+      },
+    };
   }
 
   const ogImage = `${siteMetadata.siteUrl}/og?title=${project.title}`;
@@ -33,6 +39,9 @@ export async function generateMetadata(props: {
   return {
     title: project.title,
     description: project.summary,
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/projects/${project.slug}`,
+    },
     openGraph: {
       title: project.title,
       description: project.summary,

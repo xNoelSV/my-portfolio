@@ -9,6 +9,14 @@ import { LINKS } from "@/data/links";
 import { Separator } from "@/components/ui/separator";
 import { allBlogs } from ".contentlayer/generated";
 import { BlogListItem } from "@/components/blog/blog-list-item";
+import { generatePageMetadata } from "@/data/seo";
+
+export const metadata = generatePageMetadata({
+  title: "Home",
+  description:
+    "Welcome to my personal portfolio website where I showcase my projects, blog posts, and share insights about technology and software development.",
+  canonical: "/",
+});
 
 export default function HomePage() {
   const blogs = allBlogs

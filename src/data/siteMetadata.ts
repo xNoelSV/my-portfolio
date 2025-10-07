@@ -1,7 +1,7 @@
 export const siteMetadata = {
   title: "Noel Sariñena",
   author: "Noel Sariñea Varela",
-  siteUrl: "https://???",
+  siteUrl: "https://noelsarinena.dev",
   socialBanner: "/_static/default-og-card.png",
   description:
     "Noel Sariñena - Fullstack developer specializing in backend development. Passionate about building scalable and efficient applications.",

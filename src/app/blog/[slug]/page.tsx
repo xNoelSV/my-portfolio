@@ -18,14 +18,20 @@ export const generateStaticParams = async () =>
   // dynamic route `[slug]` instead of the full `blog/first-post` flattenedPath.
   allBlogs.map((blog) => ({ slug: blog.slug }));
 
-export async function generateMetadata(props: {
+export async function generatePageMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
   const params = await props.params;
   // Find by the computed `slug` which matches the route param
   const blog = allBlogs.find((blog) => blog.slug === params.slug);
   if (!blog) {
-    return;
+    return {
+      title: "Blog not found",
+      description: "The requested blog post was not found.",
+      alternates: {
+        canonical: `${siteMetadata.siteUrl}/blog`,
+      },
+    };
   }
 
   const ogImage = `${siteMetadata.siteUrl}/og?title=${blog.title}`;
@@ -33,6 +39,9 @@ export async function generateMetadata(props: {
   return {
     title: blog.title,
     description: blog.summary,
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/blog/${blog.slug}`,
+    },
     openGraph: {
       title: blog.title,
       description: blog.summary,
