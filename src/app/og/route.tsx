@@ -11,7 +11,11 @@ export async function GET(req: NextRequest) {
     const hasTitle = searchParams.has("title");
     const postTitle = hasTitle
       ? searchParams.get("title")?.slice(0, 100)
-      : ["Blog", "Projects"];
+      : searchParams.has("type") && searchParams.get("type") === "projects"
+      ? "Projects"
+      : searchParams.has("type") && searchParams.get("type") === "blog"
+      ? "Blog"
+      : undefined;
 
     const robotoFlex = await fetch(
       new URL("../../../public/_static/fonts/RobotoFlex.ttf", import.meta.url)
