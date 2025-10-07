@@ -16,7 +16,7 @@ import { AnimatedBlogList } from "@/components/blog/animated-blog-list";
 import { allProjects } from "contentlayer/generated";
 import { ENV } from "@/lib/env";
 import { generatePageMetadata } from "@/data/seo";
-import { SearchInput } from "@/components/blog/search-input";
+import { SearchInput } from "@/components/ui/search-input";
 import { Pagination } from "@/components/pagination/pagination";
 import { AnimatedProjectsList } from "@/components/projects/animated-projects-list";
 
@@ -71,7 +71,9 @@ export default async function ProjectsPage({
       <section className="space-y-8">
         <div className="space-y-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight">Projects</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Projects & Courses
+            </h1>
             <p className="text-muted-foreground text-lg max-w-2xl">
               Personal projects where I showcase my skills and creativity
             </p>

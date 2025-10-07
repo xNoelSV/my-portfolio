@@ -27,7 +27,7 @@ type ProjectCardProps = Pick<
 
 export const ProjectCard = ({ project }: { project: ProjectCardProps }) => {
   return (
-    <Card className="group overflow-hidden transition-all duration-500 hover:shadow-xl dark:hover:shadow-muted/30 h-full flex flex-col">
+    <Card className="group overflow-hidden transition-all duration-500 hover:shadow-lg dark:hover:shadow-muted/30 h-full flex flex-col">
       <div className=" relative cursor-pointer">
         <ZoomableImage
           src={project.image}

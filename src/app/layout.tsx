@@ -8,6 +8,9 @@ import { Toaster } from "sonner";
 import { TailwindIndicator } from "./tailwind-indicator";
 import { Metadata } from "next";
 import { siteMetadata } from "@/data/siteMetadata";
+import { Metadata } from "next";
+import { siteMetadata } from "@/data/siteMetadata";
+import Head from "@/app/head";
 
 const roboto_flex = Roboto_Flex({
   subsets: ["latin"],
@@ -56,6 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Head />
       <body
         className={cn(
           `mx-auto min-h-screen max-w-3xl antialiased 

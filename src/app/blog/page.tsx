@@ -2,7 +2,7 @@ import { AnimatedBlogList } from "@/components/blog/animated-blog-list";
 import { allBlogs } from "contentlayer/generated";
 import { ENV } from "@/lib/env";
 import { generatePageMetadata } from "@/data/seo";
-import { SearchInput } from "@/components/blog/search-input";
+import { SearchInput } from "@/components/ui/search-input";
 import { Pagination } from "@/components/pagination/pagination";
 
 export const metadata = generatePageMetadata({
