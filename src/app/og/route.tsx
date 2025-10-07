@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
       : ["Blog", "Projects"];
 
     const robotoFlex = await fetch(
-      new URL("@/public/_static/fonts/RobotoFlex.ttf", import.meta.url)
+      new URL("../../../public/_static/fonts/RobotoFlex.ttf", import.meta.url)
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
