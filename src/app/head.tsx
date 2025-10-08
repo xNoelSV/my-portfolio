@@ -5,7 +5,6 @@ export default function Head() {
   return (
     <>
       <link rel="icon" type="image/png" href="/_static/favicons/favicon.ico" />
-      <link rel="manifest" href="/_static/favicons/site.webmanifest" />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta
         name="theme-color"

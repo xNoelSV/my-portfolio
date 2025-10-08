@@ -11,15 +11,7 @@ export async function GET(req: NextRequest) {
     const hasTitle = searchParams.has("title");
     const postTitle = hasTitle
       ? searchParams.get("title")?.slice(0, 100)
-      : searchParams.has("type") && searchParams.get("type") === "projects"
-      ? "Projects"
-      : searchParams.has("type") && searchParams.get("type") === "blog"
-      ? "Blog"
       : "My Portfolio";
-
-    const fontData = await fetch(
-      "https://fonts.gstatic.com/s/googlesansflex/v5/t5s6IQcYNIWbFgDgAAzZ34auoVyXkJCOvp3SFWJbN5hF8Ju1x5tKByN2l9sI40swNJwakXdYAZzz0jbnJ4qFQO5tGjLvDSkV4DyKMo6qQzwliVdHySgxyRg2.woff2"
-    ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
       (
@@ -31,8 +23,11 @@ export async function GET(req: NextRequest) {
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "center",
-            color: "white",
+            backgroundColor: "#000000",
             backgroundImage: `url(${siteMetadata.siteUrl}/_static/content-og-card.png)`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+            backgroundPosition: "center",
           }}
         >
           <div
@@ -41,8 +36,9 @@ export async function GET(req: NextRequest) {
               marginRight: 100,
               display: "flex",
               fontSize: 65,
-              fontFamily: "Inter",
+              fontFamily: "roboto, -apple-system, sans-serif",
               fontStyle: "normal",
+              fontWeight: 700,
               color: "white",
               whiteSpace: "pre-wrap",
             }}
@@ -54,14 +50,6 @@ export async function GET(req: NextRequest) {
       {
         width: 1200,
         height: 630,
-        fonts: [
-          {
-            name: "Inter",
-            data: fontData,
-            style: "normal",
-            weight: 400,
-          },
-        ],
       }
     );
   } catch (e) {

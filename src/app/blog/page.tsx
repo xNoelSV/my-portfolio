@@ -4,12 +4,14 @@ import { ENV } from "@/lib/env";
 import { generatePageMetadata } from "@/data/seo";
 import { SearchInput } from "@/components/ui/search-input";
 import { Pagination } from "@/components/pagination/pagination";
+import { siteMetadata } from "@/data/siteMetadata";
 
 export const metadata = generatePageMetadata({
   title: "Blog",
   description:
     "Explore my personal blog where I share insights, discoveries, and thoughts on technology and life.",
   canonical: "/blog",
+  image: `${siteMetadata.siteUrl}/og?title=Blog`,
 });
 
 const isProd = ENV.NODE_ENV === "production";

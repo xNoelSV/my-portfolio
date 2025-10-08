@@ -1,29 +1,16 @@
-/* export default function ProjectsPage() {
-  return (
-    <>
-      <h1 className="text-6xl font-extrabold md:text-8xl text-center mb-5">
-        Not ready yet!
-      </h1>
-      <p className="mb-4 text-xl font-bold md:text-2xl text-center">
-        Coming soon...
-      </p>
-    </>
-  );
-}
- */
-
-import { AnimatedBlogList } from "@/components/blog/animated-blog-list";
 import { allProjects } from "contentlayer/generated";
 import { ENV } from "@/lib/env";
 import { generatePageMetadata } from "@/data/seo";
 import { SearchInput } from "@/components/ui/search-input";
 import { Pagination } from "@/components/pagination/pagination";
 import { AnimatedProjectsList } from "@/components/projects/animated-projects-list";
+import { siteMetadata } from "@/data/siteMetadata";
 
 export const metadata = generatePageMetadata({
   title: "Projects",
   description: "Find out about my projects",
   canonical: "/projects",
+  image: `${siteMetadata.siteUrl}/og?title=Projects`,
 });
 
 const isProd = ENV.NODE_ENV === "production";
