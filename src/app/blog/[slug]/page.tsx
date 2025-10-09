@@ -18,7 +18,7 @@ export const generateStaticParams = async () =>
   // dynamic route `[slug]` instead of the full `blog/first-post` flattenedPath.
   allBlogs.map((blog) => ({ slug: blog.slug }));
 
-export async function generatePageMetadata(props: {
+export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
   const params = await props.params;
@@ -34,7 +34,7 @@ export async function generatePageMetadata(props: {
     };
   }
 
-  const ogImage = `${siteMetadata.siteUrl}/og?title=${blog.title}`;
+  const ogImage = `${siteMetadata.siteUrl}/og?title=Blog: ${blog.title}`;
 
   return {
     title: blog.title,

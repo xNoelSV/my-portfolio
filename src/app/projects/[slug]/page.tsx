@@ -34,7 +34,7 @@ export async function generateMetadata(props: {
     };
   }
 
-  const ogImage = `${siteMetadata.siteUrl}/og?title=${project.title}`;
+  const ogImage = `${siteMetadata.siteUrl}/og?title=Project: ${project.title}`;
 
   return {
     title: project.title,
