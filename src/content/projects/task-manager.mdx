@@ -1,0 +1,244 @@
+---
+title: Task Manager
+summary: Personal project to improve my skills on Next.js and start learning microservices with Spring Cloud
+image: _static/projects/task-manager/thumbnail.png
+tags:
+  - Next.js
+  - React
+  - TypeScript
+  - Spring Boot
+  - Spring Cloud Gateway
+  - JWT
+  - Microservices
+  - Docker Compose
+  - H2
+  - REST API
+  - Java 21
+githubUrl: https://github.com/xNoelSV/TaskManager
+publishedAt: 2024-10-27
+---
+
+Full‑stack task management app with a **Next.js 16 (App Router) + React 19** frontend and a **Spring Boot 3** microservices backend orchestrated through **Spring Cloud Gateway** and **Docker Compose**. Authentication is handled with **JWT (HS256)**; the API Gateway validates tokens and injects identity headers to domain services. Persistence uses **H2 file mode** for easy local setup.
+
+> The repository is split into two folders: `taskmanager_frontend` and `taskmanager_backend`.
+
+## Quick local demo
+
+### Option A — Backend with Docker, Frontend locally
+
+1. From `taskmanager_backend/` run:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   Exposed services:
+
+   - API Gateway → http://localhost:8080
+   - Auth Service → internal (8081)
+   - Task Service → internal (8082)
+
+2. In `taskmanager_frontend/` create `.env.local`:
+
+   ```bash
+   BACKEND_URL=http://localhost:8080
+   ```
+
+3. Start the frontend:
+   ```bash
+   pnpm install   # or npm install / yarn / bun install
+   pnpm dev       # runs on http://localhost:3000 by default
+   ```
+
+**CORS note:** `application.yaml` in the gateway reads `CORS_ALLOWED_ORIGINS` (defaults to `http://localhost:3000`). If you run the frontend on another origin, update that env var or the YAML accordingly. The provided `docker-compose.yaml` sets `CORS_ALLOWED_ORIGINS=http://localhost:8080`; for a Next.js dev server on port 3000, change it to `http://localhost:3000`.
+
+### Option B — Everything locally (no Docker)
+
+- **Gateway** (`taskmanager_backend/gateway`):
+  ```bash
+  mvn spring-boot:run
+  ```
+- **Auth Service** (`taskmanager_backend/auth-service`):
+  ```bash
+  mvn spring-boot:run
+  ```
+- **Task Service** (`taskmanager_backend/task-service`):
+  ```bash
+  mvn spring-boot:run
+  ```
+- **Frontend** (`taskmanager_frontend`):
+  ```bash
+  BACKEND_URL=http://localhost:8080 pnpm dev
+  ```
+
+## Architecture
+
+- **Frontend (Next.js 16, React 19, TypeScript 5, Tailwind CSS v4)**  
+  Routes: `/login` and protected `/dashboard`. API routes `/api/login` and `/api/logout`. The `middleware.ts` reads the `access_token` cookie, decodes its payload client‑side for UX (no signature verification), and guards public/protected routes.
+
+- **API Gateway (Spring Cloud Gateway)**  
+  Validates **JWT HS256** using the same secret as Auth. On success, it **injects headers** to downstream services: `X-User-Id`, `X-Username`, `X-Roles`.
+
+- **Auth Service (Spring Boot 3)**  
+  Endpoints for registration and login. Issues access tokens with claims: `sub` (user id), `username`, `roles`. Configurable issuer, secret, and token TTL.
+
+- **Task Service (Spring Boot 3)**  
+  Per‑user CRUD for tasks. Reads identity exclusively from the headers injected by the gateway and rejects requests if they are missing. Status enum: `TODO`, `IN_PROGRESS`, `DONE`, `CANCELLED`. Basic auditing fields (created/updated by and timestamps).
+
+## Features
+
+- Sign up and sign in with username/email and password
+- JWT issuance and validation (HS256)
+- Route protection in the frontend through middleware; the backend is the single source of truth for auth
+- Per‑user task board (CRUD) via REST API
+- Configurable CORS at the gateway
+- Health endpoints exposed for Docker health checks
+
+## Folder structure (summary)
+
+```
+taskmanager_frontend/
+  app/
+    (public)/login/page.tsx
+    (protected)/dashboard/page.tsx
+    api/login/route.ts                  # forwards to gateway /auth/login
+    api/logout/route.ts                 # clears access_token cookie
+    globals.css                         # Tailwind v4
+    layout.tsx
+  components/
+    logout-butto.tsx                    # logout button component
+  lib/api.ts                            # server-side fetch with cookie'd JWT
+  middleware.ts                         # public/protected guards
+  next.config.ts, tsconfig.json
+  package.json, pnpm-lock.yaml
+
+taskmanager_backend/
+  docker-compose.yaml
+  gateway/                              # Spring Cloud Gateway (JWT validator + header injection)
+  auth-service/                         # Register/Login + token issuing (JJWTS)
+  task-service/                         # Per-user task CRUD (H2)
+```
+
+## Security notes
+
+- **JWT HS256** with configurable issuer and secret. The gateway validates the signature via `secret-key` and does not forward the token; it forwards **normalized identity headers** instead.
+- The frontend **does not verify the signature** client‑side; it only decodes the payload for navigation/UX. Real validation is enforced at the gateway.
+- The Task Service requires `X-User-Id`, `X-Username`, and `X-Roles` headers (set by the gateway) and returns 401 if any is missing.
+
+## Configuration
+
+### Frontend (`.env.local`)
+
+```ini
+BACKEND_URL=http://localhost:8080
+```
+
+### Gateway (`application.yaml` / env)
+
+```yaml
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowedOrigins:
+                  ["${CORS_ALLOWED_ORIGINS:http://localhost:3000}"]
+                allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+                allowedHeaders: ["Authorization", "Content-Type"]
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: ${JWT_SECRET:dev-change-me-please-32bytes}
+```
+
+Useful environment variables in **Docker Compose**:
+
+```yaml
+JWT_SECRET=...                  # must match auth-service
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+### Auth Service (`application.yaml` / env)
+
+```yaml
+jwt:
+  issuer: ${JWT_ISSUER:auth-local}
+  secret: ${JWT_SECRET:dev-change-me-please-32bytes}
+  accessMinutes: ${JWT_ACCESS_MINUTES:15}
+spring:
+  datasource:
+    url: jdbc:h2:file:/data/authdb;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+```
+
+### Task Service (`application.yaml`)
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:file:/data/tasksdb;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+```
+
+## REST API
+
+All calls are made **through the gateway** (`http://localhost:8080`).
+
+### Auth
+
+- `POST /auth/register`  
+  Request:
+
+  ```json
+  { "username": "neo", "email": "neo@matrix.io", "password": "secret" }
+  ```
+
+- `POST /auth/login`  
+  Response:
+  ```json
+  { "access_token": "...", "expires_in": 900, "token_type": "Bearer" }
+  ```
+
+### Tasks
+
+Requires `Authorization: Bearer <token>` to the gateway.
+
+- `GET /tasks` — list current user's tasks
+- `POST /tasks` — create a task
+- `GET /tasks/{id}` — get by id
+- `PUT /tasks/{id}` — update
+- `DELETE /tasks/{id}` — delete
+
+Example:
+
+```bash
+TOKEN="..."
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/tasks
+```
+
+## Testing status
+
+This repo focuses on the architecture and local bootstrapping. There is minimal test scaffolding. Next iterations should expand domain and integration coverage (gateway + services).
+
+## Short roadmap
+
+- Kanban board UI on `/dashboard` with drag and drop
+- Pagination and filters on `/tasks`
+- Role‑based policies at the gateway
+- PostgreSQL + Flyway and containerized databases
+- CI/CD for builds and images
+- Basic rate limiting in the gateway
+
+## Requirements
+
+- Java 21 and Maven 3.9
+- Node 18+ and PNPM/NPM/Yarn
+- Docker and Docker Compose (optional for orchestration)
+
+## Author
+
+Built by **Noel Sariñena** — Full‑stack architecture with Next.js, Spring Cloud Gateway, and microservices.
