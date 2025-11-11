@@ -4,12 +4,14 @@ import { SOCIALS } from "@/data/socials";
 import { SocialLink } from "@/components/social-link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, ExternalLink } from "lucide-react";
 import { LINKS } from "@/data/links";
 import { Separator } from "@/components/ui/separator";
 import { allBlogs } from ".contentlayer/generated";
 import { BlogListItem } from "@/components/blog/blog-list-item";
 import { generatePageMetadata } from "@/data/seo";
+import { CERTIFICATIONS } from "@/data/certifications";
+import { CertificationItem } from "@/components/certification/certification-item";
 
 export const metadata = generatePageMetadata({
   title: "Home",
@@ -25,6 +27,10 @@ export default function HomePage() {
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
     .slice(0, 2);
+
+  const certifications = CERTIFICATIONS.sort(
+    (a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()
+  );
 
   return (
     <div className="space-y-12">
@@ -110,6 +116,32 @@ export default function HomePage() {
           <p></p>
         </div>
       </section> */}
+
+      <Separator />
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Certifications
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {!certifications.length ? (
+            <p className="flex items-center justify-center mt-5 text-muted-foreground leading-relaxed">
+              No certifications found.
+            </p>
+          ) : (
+            certifications.map((certification) => (
+              <Link
+                key={certification.title}
+                href={certification.credentialLink}
+                target="_blank"
+              >
+                <CertificationItem certification={certification} />
+              </Link>
+            ))
+          )}
+        </div>
+      </section>
 
       <Separator />
 
