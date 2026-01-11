@@ -5,6 +5,7 @@ import { withContentlayer } from "next-contentlayer2";
 const nextConfig = {
   /* config options here */
   reactStrictMode: true,
+  turbopack: {},
 };
 
 module.exports = withContentlayer(nextConfig);
