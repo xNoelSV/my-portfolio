@@ -3,12 +3,23 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Tag } from "lucide-react";
 
 type Props = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
   url: string;
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
 };
 
 const difficultyColors = {
@@ -20,15 +31,21 @@ const difficultyColors = {
 export default function LeetCodeCard({ title, difficulty, tags, url }: Props) {
   return (
     <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      variants={containerVariants}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="group"
     >
       <Link
         href={url}
-        className="block rounded-xl p-4 hover:shadow-lg dark:hover:shadow-muted/30 transition-colors"
+        className="block rounded-xl p-4 border hover:shadow-lg dark:hover:shadow-muted/30 transition-colors"
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center mb-2">
+          <Tag
+            className={cn(
+              "w-6 h-6 opacity-60 mr-1.5",
+              difficultyColors[difficulty]
+            )}
+          />
           <span
             className={cn(
               "text-sm font-medium capitalize",
@@ -37,9 +54,11 @@ export default function LeetCodeCard({ title, difficulty, tags, url }: Props) {
           >
             {difficulty}
           </span>
-          <span className="text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-            ↗
-          </span>
+          <div className="w-full flex justify-end">
+            <span className="text-sm justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+              ↗
+            </span>
+          </div>
         </div>
 
         <h3 className="text-lg font-semibold mb-3">{title}</h3>

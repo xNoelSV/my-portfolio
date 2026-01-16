@@ -1,39 +1,17 @@
-"use client";
-
 import { allLeetCodes } from "contentlayer/generated";
-import { useMemo, useState } from "react";
-import LeetCodeGrid from "@/components/leetcode/leetcode-grid";
-import LeetCodeFilters from "@/components/leetcode/leetcode-filter";
-import { SearchInput } from "@/components/ui/search-input";
+import LeetCodeContent from "@/components/leetcode/leetcode-content";
 
-export default function LeetCodePage() {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(
-    null
-  );
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+export default async function LeetCodePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const pageParam = resolvedSearchParams.page;
+  const searchQuery = resolvedSearchParams.search?.toString() || "";
+  const page = typeof pageParam === "string" ? parseInt(pageParam, 10) || 1 : 1;
 
-  const allTags = useMemo(() => {
-    const tags = new Set<string>();
-    allLeetCodes.forEach((p) => p.tags.forEach((t) => tags.add(t)));
-    return Array.from(tags);
-  }, []);
-
-  const filteredProblems = useMemo(() => {
-    return allLeetCodes.filter((problem) => {
-      if (selectedDifficulty && problem.difficulty !== selectedDifficulty) {
-        return false;
-      }
-
-      if (
-        selectedTags.length > 0 &&
-        !selectedTags.every((tag) => problem.tags.includes(tag))
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [selectedDifficulty, selectedTags]);
+  const allTags = Array.from(new Set(allLeetCodes.flatMap((p) => p.tags)));
 
   return (
     <div className="space-y-10">
@@ -49,25 +27,13 @@ export default function LeetCodePage() {
               algorithmic thinking.
             </p>
           </div>
-          <SearchInput />
         </div>
-        <div className="container py-12">
-          <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-10">
-            <div className="sticky top-24 self-start hidden md:block">
-              <LeetCodeFilters
-                selectedDifficulty={selectedDifficulty}
-                setSelectedDifficulty={setSelectedDifficulty}
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-                allTags={allTags}
-              />
-            </div>
-
-            <div>
-              <LeetCodeGrid problems={filteredProblems} />
-            </div>
-          </div>
-        </div>
+        <LeetCodeContent
+          problems={allLeetCodes}
+          allTags={allTags}
+          searchQuery={searchQuery}
+          page={page}
+        />
       </section>
     </div>
   );

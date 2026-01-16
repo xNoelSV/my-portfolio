@@ -1,5 +1,7 @@
 "use client";
 
+import { SearchInput } from "@/components/ui/search-input";
+
 type Props = {
   selectedDifficulty: string | null;
   setSelectedDifficulty: (v: string | null) => void;
@@ -28,7 +30,17 @@ export default function LeetCodeFilters({
   return (
     <aside className="space-y-6">
       <div>
-        <h4 className="font-semibold mb-2">Difficulty</h4>
+        <h4 className="font-semibold mb-2">Search by name</h4>
+        <SearchInput />
+        <div className="flex items-center my-2">
+          <h4 className="font-semibold align-middle mr-5">Difficulty</h4>
+          <button
+            onClick={() => setSelectedDifficulty(null)}
+            className="text-sm w-10 rounded hover:bg-muted/30 opacity-60 hover:opacity-100 transition-opacity"
+          >
+            X
+          </button>
+        </div>
         <div className="space-y-2">
           {difficulties.map((d) => (
             <label key={d} className="flex items-center gap-2 text-sm">
@@ -41,13 +53,6 @@ export default function LeetCodeFilters({
               <span className="capitalize">{d}</span>
             </label>
           ))}
-
-          <button
-            onClick={() => setSelectedDifficulty(null)}
-            className="text-xs opacity-60 hover:opacity-100 transition-opacity"
-          >
-            Clear
-          </button>
         </div>
       </div>
 
