@@ -69,7 +69,7 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function Blog(props: {
+export default async function Project(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;

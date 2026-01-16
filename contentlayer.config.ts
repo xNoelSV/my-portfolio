@@ -96,9 +96,38 @@ export const Project = defineDocumentType(() => ({
   computedFields,
 }));
 
+export const LeetCode = defineDocumentType(() => ({
+  name: "LeetCode",
+  filePathPattern: `leetcode/**/*.mdx`,
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    difficulty: {
+      type: "enum",
+      options: ["easy", "medium", "hard"],
+      required: true,
+    },
+    tags: {
+      type: "list",
+      of: { type: "string" },
+      required: true,
+    },
+  },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc) => doc._raw.flattenedPath.split("/").pop(),
+    },
+    url: {
+      type: "string",
+      resolve: (doc) => `/leetcode/${doc._raw.flattenedPath.split("/").pop()}`,
+    },
+  },
+}));
+
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Blog, Project],
+  documentTypes: [Blog, Project, LeetCode],
   mdx: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
