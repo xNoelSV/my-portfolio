@@ -131,7 +131,19 @@ export default function LeetCodeContent({
         </div>
 
         <div className="pl-6 md:pl-0">
-          <LeetCodeGrid problems={filteredProblems} />
+          {filteredProblems.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">
+                {searchQuery || selectedDifficulty || selectedTags.length > 0
+                  ? `No LeetCode problems found matching ${
+                      searchQuery ? ` "${searchQuery}"` : ""
+                    }.`
+                  : "No problems found."}
+              </p>
+            </div>
+          ) : (
+            <LeetCodeGrid problems={filteredProblems} />
+          )}
         </div>
       </div>
     </div>
