@@ -119,6 +119,10 @@ export const LeetCode = defineDocumentType(() => ({
       type: "string",
       required: false,
     },
+    draft: {
+      type: "boolean",
+      default: false,
+    },
   },
   computedFields,
 }));

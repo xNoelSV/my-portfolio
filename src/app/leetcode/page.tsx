@@ -11,7 +11,10 @@ export default async function LeetCodePage({
   const searchQuery = resolvedSearchParams.search?.toString() || "";
   const page = typeof pageParam === "string" ? parseInt(pageParam, 10) || 1 : 1;
 
-  const allTags = Array.from(new Set(allLeetCodes.flatMap((p) => p.tags)));
+  const publishedLeetCodes = allLeetCodes.filter((problem) => !problem.draft);
+  const allTags = Array.from(
+    new Set(publishedLeetCodes.flatMap((p) => p.tags))
+  );
 
   return (
     <div className="space-y-10">
@@ -29,7 +32,7 @@ export default async function LeetCodePage({
           </div>
         </div>
         <LeetCodeContent
-          problems={allLeetCodes}
+          problems={publishedLeetCodes}
           allTags={allTags}
           searchQuery={searchQuery}
           page={page}
