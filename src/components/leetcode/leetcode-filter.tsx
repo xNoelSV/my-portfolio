@@ -31,13 +31,17 @@ export default function LeetCodeFilters({
   return (
     <aside className="space-y-6">
       <div>
-        <h4 className="font-semibold mb-2">Search by name</h4>
+        <h4 className="font-semibold mb-2 text-lg md:text-sm">
+          Search by name
+        </h4>
         <SearchInput />
         <div className="flex items-center my-2">
-          <h4 className="font-semibold align-middle mr-5">Difficulty</h4>
+          <h4 className="font-semibold align-middle mr-5 text-lg md:text-sm">
+            Difficulty
+          </h4>
           <button
             onClick={() => setSelectedDifficulty(null)}
-            className={`text-sm border w-10 rounded hover:bg-muted/30 opacity-60 hover:opacity-100 transition-opacity focus:outline-none ${
+            className={`text-base md:text-sm border px-2 py-1 rounded hover:bg-muted/30 opacity-60 hover:opacity-100 transition-opacity focus:outline-none ${
               !selectedDifficulty ? "invisible" : ""
             }`}
             onMouseDown={(e) => e.preventDefault()}
@@ -60,7 +64,7 @@ export default function LeetCodeFilters({
       </div>
 
       <div>
-        <h4 className="font-semibold mb-2">Type</h4>
+        <h4 className="font-semibold mb-2 text-lg md:text-sm">Type</h4>
         <div className="space-y-2">
           {allTags.map((tag) => (
             <CustomCheckbox
@@ -82,7 +86,7 @@ export default function LeetCodeFilters({
               setSelectedDifficulty(null);
               setSelectedTags([]);
             }}
-            className="rounded border px-4 py-2 text-sm hover:bg-muted/60 focus:outline-none transition-colors"
+            className="rounded border px-4 py-2 text-base md:text-sm hover:bg-muted/60 focus:outline-none transition-colors"
           >
             Clear filters
           </button>

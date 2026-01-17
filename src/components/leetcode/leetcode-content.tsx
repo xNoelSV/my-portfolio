@@ -98,7 +98,7 @@ export default function LeetCodeContent({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Filters</h3>
+                <h3 className="font-semibold text-2xl">Filters</h3>
                 <button
                   type="button"
                   onClick={() => setFiltersOpen(false)}
