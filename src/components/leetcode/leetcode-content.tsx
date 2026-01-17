@@ -58,7 +58,7 @@ export default function LeetCodeContent({
           type="button"
           onClick={() => setFiltersOpen(true)}
           onMouseDown={(e) => e.preventDefault()}
-          className="md:hidden fixed left-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center rounded-r-xl rounded-l-none bg-primary text-primary-foreground px-1 py-4 h-32 shadow-lg hover:shadow-xl transition-shadow"
+          className="md:hidden fixed left-0 top-[51%] -translate-y-1/2 z-40 flex flex-col items-center justify-center rounded-r-xl rounded-l-none bg-primary text-primary-foreground px-1 py-4 h-32 shadow-lg hover:shadow-xl transition-shadow"
           aria-label="Open filters"
         >
           <motion.div
