@@ -12,16 +12,6 @@ type Props = {
   url: string;
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
 const difficultyColors = {
   easy: "text-green-500",
   medium: "text-yellow-500",
@@ -31,7 +21,6 @@ const difficultyColors = {
 export default function LeetCodeCard({ title, difficulty, tags, url }: Props) {
   return (
     <motion.div
-      variants={containerVariants}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="group"
     >

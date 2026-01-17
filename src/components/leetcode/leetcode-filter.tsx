@@ -36,7 +36,10 @@ export default function LeetCodeFilters({
           <h4 className="font-semibold align-middle mr-5">Difficulty</h4>
           <button
             onClick={() => setSelectedDifficulty(null)}
-            className="text-sm w-10 rounded hover:bg-muted/30 opacity-60 hover:opacity-100 transition-opacity"
+            className={`text-sm border w-10 rounded hover:bg-muted/30 opacity-60 hover:opacity-100 transition-opacity focus:outline-none ${
+              !selectedDifficulty ? "invisible" : ""
+            }`}
+            onMouseDown={(e) => e.preventDefault()}
           >
             X
           </button>
