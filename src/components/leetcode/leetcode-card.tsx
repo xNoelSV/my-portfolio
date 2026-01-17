@@ -26,7 +26,7 @@ export default function LeetCodeCard({ title, difficulty, tags, slug }: Props) {
     >
       <Link
         href={`/leetcode/${slug}`}
-        className="block rounded-xl p-4 border hover:shadow-lg dark:hover:shadow-muted/30 transition-colors"
+        className="block rounded-xl p-4 border hover:shadow-lg dark:hover:shadow-muted/30 transition-all"
       >
         <div className="flex items-center mb-2">
           <Tag
