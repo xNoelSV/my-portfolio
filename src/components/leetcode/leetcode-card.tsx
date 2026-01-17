@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Tag } from "lucide-react";
+import { Tag, ArrowUpRight } from "lucide-react";
 
 type Props = {
   title: string;
@@ -44,9 +44,7 @@ export default function LeetCodeCard({ title, difficulty, tags, slug }: Props) {
             {difficulty}
           </span>
           <div className="w-full flex justify-end">
-            <span className="text-sm justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-              ↗
-            </span>
+            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </div>
 

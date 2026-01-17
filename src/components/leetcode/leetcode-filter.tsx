@@ -1,6 +1,7 @@
 "use client";
 
 import { SearchInput } from "@/components/ui/search-input";
+import { CustomRadio, CustomCheckbox } from "@/components/ui/radio-checkbox";
 
 type Props = {
   selectedDifficulty: string | null;
@@ -46,16 +47,14 @@ export default function LeetCodeFilters({
         </div>
         <div className="space-y-2">
           {difficulties.map((d) => (
-            <label key={d} className="flex items-center gap-2 text-sm">
-              <input
-                type="radio"
-                name="difficulty"
-                checked={selectedDifficulty === d}
-                onChange={() => setSelectedDifficulty(d)}
-                className="accent-primary"
-              />
-              <span className="capitalize">{d}</span>
-            </label>
+            <CustomRadio
+              key={d}
+              id={`difficulty-${d}`}
+              name="difficulty"
+              checked={selectedDifficulty === d}
+              onChange={() => setSelectedDifficulty(d)}
+              label={d}
+            />
           ))}
         </div>
       </div>
@@ -64,15 +63,13 @@ export default function LeetCodeFilters({
         <h4 className="font-semibold mb-2">Type</h4>
         <div className="space-y-2">
           {allTags.map((tag) => (
-            <label key={tag} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={selectedTags.includes(tag)}
-                onChange={() => toggleTag(tag)}
-                className="accent-primary"
-              />
-              <span>{tag}</span>
-            </label>
+            <CustomCheckbox
+              key={tag}
+              id={`tag-${tag}`}
+              checked={selectedTags.includes(tag)}
+              onChange={() => toggleTag(tag)}
+              label={tag}
+            />
           ))}
         </div>
       </div>
