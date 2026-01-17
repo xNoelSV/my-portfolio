@@ -1,5 +1,15 @@
 import { allLeetCodes } from "contentlayer/generated";
 import LeetCodeContent from "@/components/leetcode/leetcode-content";
+import { siteMetadata } from "@/data/siteMetadata";
+import { generatePageMetadata } from "@/data/seo";
+
+export const metadata = generatePageMetadata({
+  title: "LeetCode",
+  description:
+    "Discover my collection of LeetCode solutions, showcasing my problem-solving skills and algorithmic thinking through various coding challenges.",
+  canonical: "/leetcode",
+  image: `${siteMetadata.siteUrl}/og?title=LeetCode Solutions`,
+});
 
 export default async function LeetCodePage({
   searchParams,
