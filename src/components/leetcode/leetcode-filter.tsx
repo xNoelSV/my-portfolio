@@ -52,6 +52,7 @@ export default function LeetCodeFilters({
                 name="difficulty"
                 checked={selectedDifficulty === d}
                 onChange={() => setSelectedDifficulty(d)}
+                className="accent-primary"
               />
               <span className="capitalize">{d}</span>
             </label>
@@ -68,12 +69,28 @@ export default function LeetCodeFilters({
                 type="checkbox"
                 checked={selectedTags.includes(tag)}
                 onChange={() => toggleTag(tag)}
+                className="accent-primary"
               />
               <span>{tag}</span>
             </label>
           ))}
         </div>
       </div>
+
+      {(selectedDifficulty || selectedTags.length > 0) && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedDifficulty(null);
+              setSelectedTags([]);
+            }}
+            className="rounded border px-4 py-2 text-sm hover:bg-muted/60 focus:outline-none transition-colors"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
     </aside>
   );
 }

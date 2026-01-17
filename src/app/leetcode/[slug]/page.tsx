@@ -7,6 +7,11 @@ import { Metadata } from "next";
 import { siteMetadata } from "@/data/siteMetadata";
 import { getMDXComponent } from "node_modules/next-contentlayer2/dist/hooks/useMDXComponent";
 import NotFound from "@/app/not-found";
+import { Button } from "@/components/ui/button";
+import Link from "next/dist/client/link";
+import { ArrowLeft, Clock } from "lucide-react";
+import { Balancer } from "react-wrap-balancer";
+import { Separator } from "@/components/ui/separator";
 
 /* type Props = {
   params: { slug: string };
@@ -85,8 +90,8 @@ export default async function LeetCode(props: {
 
   const Content = getMDXComponent(leetcode.body.code);
   return (
-    <article className="container max-w-3xl py-12">
-      <header className="mb-8">
+    <article className="space-y-8">
+      {/* <header className="mb-8">
         <span className="text-sm capitalize opacity-60">
           {leetcode.difficulty}
         </span>
@@ -100,7 +105,35 @@ export default async function LeetCode(props: {
           ))}
         </div>
       </header>
+ */}
 
+      <Button variant="ghost" size="sm" asChild className="mb-4">
+        <Link href="/leetcode">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to LeetCode solutions
+        </Link>
+      </Button>
+
+      <header className="space-y-4">
+        <h1 className="text-4xl font-bold tracking-tight">
+          <Balancer>{leetcode.title}</Balancer>
+        </h1>
+        <div className="flex flex-wrap gap-2 mt-4">
+          {leetcode.tags.map((tag) => (
+            <span key={tag} className="rounded-md border px-2 py-0.5 text-xs">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>{leetcode.readingTime.text}</span>{" "}
+          </div>
+        </div>
+      </header>
+
+      <Separator />
       <Mdx code={leetcode.body.code} />
     </article>
   );

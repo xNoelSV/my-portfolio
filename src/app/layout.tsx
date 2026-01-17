@@ -9,6 +9,7 @@ import { TailwindIndicator } from "./tailwind-indicator";
 import { Metadata } from "next";
 import { siteMetadata } from "@/data/siteMetadata";
 import Head from "@/app/head";
+import ScrollToTop from "@/components/ui/scroll-to-top";
 
 const roboto_flex = Roboto_Flex({
   subsets: ["latin"],
@@ -78,6 +79,7 @@ export default function RootLayout({
             <Footer />
             <Toaster position="bottom-center" richColors />
           </main>
+          <ScrollToTop />
           <TailwindIndicator />
         </ThemeProvider>
       </body>

@@ -9,7 +9,7 @@ type Props = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  url: string;
+  slug: string;
 };
 
 const difficultyColors = {
@@ -18,14 +18,14 @@ const difficultyColors = {
   hard: "text-red-500",
 };
 
-export default function LeetCodeCard({ title, difficulty, tags, url }: Props) {
+export default function LeetCodeCard({ title, difficulty, tags, slug }: Props) {
   return (
     <motion.div
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="group"
     >
       <Link
-        href={url}
+        href={`/leetcode/${slug}`}
         className="block rounded-xl p-4 border hover:shadow-lg dark:hover:shadow-muted/30 transition-colors"
       >
         <div className="flex items-center mb-2">

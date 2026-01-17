@@ -101,7 +101,10 @@ export const LeetCode = defineDocumentType(() => ({
   filePathPattern: `leetcode/**/*.mdx`,
   contentType: "mdx",
   fields: {
-    title: { type: "string", required: true },
+    title: {
+      type: "string",
+      required: true,
+    },
     difficulty: {
       type: "enum",
       options: ["easy", "medium", "hard"],
@@ -112,17 +115,12 @@ export const LeetCode = defineDocumentType(() => ({
       of: { type: "string" },
       required: true,
     },
-  },
-  computedFields: {
-    slug: {
+    leetcodeUrl: {
       type: "string",
-      resolve: (doc) => doc._raw.flattenedPath.split("/").pop(),
-    },
-    url: {
-      type: "string",
-      resolve: (doc) => `/leetcode/${doc._raw.flattenedPath.split("/").pop()}`,
+      required: false,
     },
   },
+  computedFields,
 }));
 
 export default makeSource({
