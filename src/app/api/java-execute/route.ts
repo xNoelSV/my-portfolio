@@ -3,6 +3,25 @@ import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 
+function getJavaPath(): string {
+  // Try common Java installation paths on Windows
+  const possiblePaths = [
+    process.env.JAVA_HOME
+      ? join(process.env.JAVA_HOME, "bin", "javac.exe")
+      : null,
+    "C:\\Program Files\\Java\\jdk*\\bin\\javac.exe",
+    "C:\\Program Files (x86)\\Java\\jdk*\\bin\\javac.exe",
+  ].filter(Boolean);
+
+  // If JAVA_HOME is set, use it
+  if (process.env.JAVA_HOME) {
+    return join(process.env.JAVA_HOME, "bin", "javac");
+  }
+
+  // Otherwise assume javac is in PATH
+  return "javac";
+}
+
 function executeCommand(
   command: string,
   args: string[],
@@ -11,6 +30,7 @@ function executeCommand(
   return new Promise((resolve) => {
     const proc = spawn(command, args, {
       timeout: 10000,
+      shell: true, // Enable shell to find commands in PATH on Windows
     });
 
     let stdout = "";
@@ -44,6 +64,10 @@ export async function POST(request: Request) {
   try {
     const { code, input } = await request.json();
 
+    // Get Java path
+    const javacPath = getJavaPath();
+    const javaPath = javacPath.replace(/javac(\.exe)?$/, "java$1");
+
     // Create temporary directory with fallback for read-only environments
     let tmpDir: string;
     try {
@@ -62,14 +86,17 @@ export async function POST(request: Request) {
       writeFileSync(javaFile, code);
 
       // Compile
-      const compileResult = await executeCommand("javac", [javaFile]);
+      const compileResult = await executeCommand(javacPath, [javaFile]);
 
-      if (compileResult.stderr) {
+      if (compileResult.stderr || compileResult.stdout.includes("error")) {
         return Response.json(
           {
             status: "error",
             stdout: "",
-            stderr: compileResult.stderr,
+            stderr:
+              compileResult.stderr ||
+              compileResult.stdout ||
+              "Java compiler not found. Please ensure Java JDK is installed and JAVA_HOME is set.",
           },
           { status: 400 },
         );
@@ -77,7 +104,7 @@ export async function POST(request: Request) {
 
       // Execute
       const runResult = await executeCommand(
-        "java",
+        javaPath,
         ["-cp", tmpDir, "Main"],
         input,
       );
@@ -100,7 +127,9 @@ export async function POST(request: Request) {
       {
         status: "error",
         stdout: "",
-        stderr: String(error),
+        stderr:
+          String(error) +
+          ". Make sure Java JDK is installed. Set JAVA_HOME environment variable if needed.",
       },
       { status: 500 },
     );
