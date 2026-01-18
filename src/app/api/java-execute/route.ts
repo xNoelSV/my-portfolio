@@ -26,14 +26,19 @@ async function executeWithPiston(
       stdin: input || "",
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
     const response = await fetch("https://api.piston.codes/v1/execute", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(30000), // 30s timeout
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Piston API returned ${response.status}`);
@@ -52,9 +57,64 @@ async function executeWithPiston(
       stderr: stderr.trim(),
     };
   } catch (error) {
+    console.error("Piston API error:", error);
+    // Try fallback API
+    return executeWithRapidAPI(code, input);
+  }
+}
+
+// Fallback: RapidAPI Judge0 with better error handling
+async function executeWithRapidAPI(
+  code: string,
+  input?: string,
+): Promise<{ stdout: string; stderr: string }> {
+  try {
+    const wrappedCode = code.includes("class Main")
+      ? code
+      : `public class Main {\n${code}\n}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(
+      "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-RapidAPI-Key": process.env.JUDGE0_API_KEY || "demo",
+          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+        },
+        body: JSON.stringify({
+          source_code: wrappedCode,
+          language_id: 26, // Java
+          stdin: input || "",
+        }),
+        signal: controller.signal,
+      },
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Judge0 API returned ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    return {
+      stdout: result.stdout
+        ? Buffer.from(result.stdout, "base64").toString()
+        : "",
+      stderr: result.stderr
+        ? Buffer.from(result.stderr, "base64").toString()
+        : "",
+    };
+  } catch (error) {
+    console.error("Judge0 API error:", error);
     return {
       stdout: "",
-      stderr: `Piston execution failed: ${String(error)}`,
+      stderr: `All execution methods failed: ${String(error)}`,
     };
   }
 }
