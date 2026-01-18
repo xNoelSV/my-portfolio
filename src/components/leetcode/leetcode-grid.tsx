@@ -36,7 +36,7 @@ export default function LeetCodeGrid({ problems }: Props) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid gap-5 sm:grid-cols-1 md:grid-cols-2"
     >
       {problems.map((problem) => (
         <motion.div key={problem._id} variants={itemVariants}>

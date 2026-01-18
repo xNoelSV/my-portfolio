@@ -1,0 +1,80 @@
+---
+title: 01. Two Sum
+difficulty: easy
+tags:
+  - HashMap
+  - Array
+---
+
+## Problem
+
+Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.
+
+## Explanation
+
+### First pass: brute force
+
+My first approach was straightforward: check every possible pair of numbers in the array. I used a nested loop where the outer loop picks the first number at index `i`, and the inner loop starts from `i + 1` to check if any subsequent number at index `j` adds up to the target. When I find a match where `nums[i] + nums[j] == target`, I return both indices immediately. This works, but it's slow because I'm checking every combination, resulting in O(n^2) time complexity and O(1) space since I'm not storing anything extra.
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[j] == target - nums[i]) {
+                    return new int[] { i, j };
+                }
+            }
+        }
+        return new int[] {};
+    }
+}
+```
+
+### Final pass: HashMap for instant lookup
+
+To avoid checking the same numbers repeatedly, I switched to a `HashMap` that stores each number I've seen along with its index. As I iterate through the array, I calculate what number I need to reach the target (`targetValueIntoInput = target - nums[i]`) and check if it already exists in my map. If it does, I've found my pair and return both indices immediately. If not, I store the current number and its index in the map for future lookups. This way, each number is processed only once, bringing the time complexity down to O(n) with O(n) space for the HashMap.
+
+**Time:** O(n)  
+**Space:** O(n)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        java.util.Map<Integer, Integer> sol = new java.util.HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int targetValueIntoInput = target - nums[i];
+            if (sol.containsKey(targetValueIntoInput)) {
+                return new int[] { sol.get(targetValueIntoInput), i };
+            }
+            sol.put(nums[i], i);
+        }
+        return new int[] {};
+    }
+  }`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "0,1",
+      params: "nums = [2, 7, 11, 15], target = 9",
+      call: `int[] result = sol.twoSum(new int[]{2, 7, 11, 15}, 9);
+        System.out.println(result[0] + "," + result[1]);`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "1,2",
+      params: "nums = [3, 2, 4], target = 6",
+      call: `int[] result = sol.twoSum(new int[]{3, 2, 4}, 6);
+        System.out.println(result[0] + "," + result[1]);`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "0,1",
+      params: "nums = [3, 3], target = 6",
+      call: `int[] result = sol.twoSum(new int[]{3, 3}, 6);
+        System.out.println(result[0] + "," + result[1]);`,
+    },
+  ]}
+/>

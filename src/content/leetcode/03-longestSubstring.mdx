@@ -1,0 +1,118 @@
+---
+title: 03. Longest Substring Without Repeating Characters
+difficulty: medium
+tags:
+  - Sliding Window
+  - HashSet
+  - String
+---
+
+## Problem
+
+Given a string `s`, return the length of the longest substring without repeating characters.
+
+## Explanation
+
+### First pass: brute force
+
+My first idea was to walk the string from every starting position, keep a `solMaker` string with the unique characters I have seen, and stop the inner loop as soon as I hit a duplicate. I tracked three things: a `count` of the current substring length, the `pos` index where the inner loop should look next, and `solMaker` to know if the next char is new. This works, but it does a fresh scan from each position, so it costs O(n^2) time and O(n) space.
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int sol = 0, count, pos;
+        String solMaker;
+        boolean isDifferent;
+
+        for (int i = 0; i < s.length(); i++) {
+            isDifferent = true;
+            pos = i + 1;
+            count = 1;
+            solMaker = String.valueOf(s.charAt(i));
+            while (pos < s.length() && isDifferent) {
+                if (solMaker.indexOf(s.charAt(pos)) == -1) {
+                    solMaker = solMaker.concat(String.valueOf(s.charAt(pos)));
+                    count++;
+                    pos++;
+                } else {
+                    isDifferent = false;
+                }
+            }
+            sol = Math.max(sol, count);
+        }
+
+        return sol;
+    }
+}
+```
+
+### Final pass: sliding window with a set
+
+To avoid restarting work, I switched to a sliding window backed by a `HashSet`. I expand the right pointer while characters stay unique; when I hit a repeat, I shrink from the left, removing chars from the set until the repeat is gone, then keep moving right. Each character is added and removed at most once, so the algorithm runs in O(n) time with O(n) space.
+
+**Time:** O(n)  
+**Space:** O(n)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int inputLength = s.length();
+        if (inputLength == 0) return 0;
+
+        int maxLength = 0;
+        java.util.Set<Character> charSet = new java.util.HashSet<>();
+        int left = 0;
+
+        for (int right = 0; right < inputLength; right++) {
+            char current = s.charAt(right);
+            if (!charSet.contains(current)) {
+                charSet.add(current);
+                maxLength = Math.max(maxLength, right - left + 1);
+            } else {
+                while (charSet.contains(current)) {
+                    charSet.remove(s.charAt(left));
+                    left++;
+                }
+                charSet.add(current);
+            }
+        }
+
+        return maxLength;
+    }
+
+}`}
+testCases={[
+{
+id: "Test 1",
+expectedOutput: "3",
+params: "s = \"abcabcbb\"",
+call: "System.out.println(sol.lengthOfLongestSubstring(\"abcabcbb\"));",
+},
+{
+id: "Test 2",
+expectedOutput: "1",
+params: "s = \"bbbbb\"",
+call: "System.out.println(sol.lengthOfLongestSubstring(\"bbbbb\"));",
+},
+{
+id: "Test 3",
+expectedOutput: "3",
+params: "s = \"pwwkew\"",
+call: "System.out.println(sol.lengthOfLongestSubstring(\"pwwkew\"));",
+},
+{
+id: "Test 4",
+expectedOutput: "0",
+params: "s = \"\"",
+call: "System.out.println(sol.lengthOfLongestSubstring(\"\"));",
+},
+{
+id: "Test 5",
+expectedOutput: "3",
+params: "s = \"dvdf\"",
+call: "System.out.println(sol.lengthOfLongestSubstring(\"dvdf\"));",
+},
+]}
+/>
