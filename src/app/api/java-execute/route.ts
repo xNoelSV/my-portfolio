@@ -3,8 +3,8 @@ import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 
-// Online Judge API (JDoodle - free tier available)
-async function executeWithJDoodle(
+// Piston API - Free, open-source code execution engine
+async function executeWithPiston(
   code: string,
   input?: string,
 ): Promise<{ stdout: string; stderr: string }> {
@@ -15,90 +15,46 @@ async function executeWithJDoodle(
       : `public class Main {\n${code}\n}`;
 
     const payload = {
-      script: wrappedCode,
       language: "java",
+      version: "*",
+      files: [
+        {
+          name: "Main.java",
+          content: wrappedCode,
+        },
+      ],
       stdin: input || "",
-      versionIndex: "0",
     };
 
-    const response = await fetch("https://api.jdoodle.com/v1/execute", {
+    const response = await fetch("https://api.piston.codes/v1/execute", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        ...payload,
-        clientId: "d4242f10b4c24bfe9c5c73d57031bbc0",
-        clientSecret: "3f4a0d6b7c8a2f5e9b1d3a7c2e5f8a1b2c3d4e5f",
-      }),
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(30000), // 30s timeout
     });
 
     if (!response.ok) {
-      throw new Error(`API returned ${response.status}`);
+      throw new Error(`Piston API returned ${response.status}`);
     }
 
     const result = await response.json();
 
-    return {
-      stdout: result.output || "",
-      stderr: result.error || "",
-    };
-  } catch (error) {
-    // Fallback to TIO if JDoodle fails
-    return executeWithTIO(code, input);
-  }
-}
-
-// TIO.run free API (no API key needed, no rate limits) - fallback
-async function executeWithTIO(
-  code: string,
-  input?: string,
-): Promise<{ stdout: string; stderr: string }> {
-  try {
-    // Wrap code with proper class structure if needed
-    const wrappedCode = code.includes("class Main")
-      ? code
-      : `public class Main {\n${code}\n}`;
-
-    // Build the request body in TIO format
-    // Format: code\nF...input\n[separator]\n
-    let body = wrappedCode;
-    body += "\nF.input\n";
-    if (input) {
-      body += input + "\n";
-    }
-    body += "\n";
-
-    const response = await fetch("https://tio.run/cgi-bin/run/tiorun", {
-      method: "POST",
-      body: body,
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`TIO.run returned ${response.status}`);
-    }
-
-    const text = await response.text();
-
-    // TIO.run response format: output[separator]debug_output
-    // The separator is typically a sequence of bytes
-    // Split by common delimiters and get the first part (stdout)
-    const parts = text.split("\n");
-
-    // Filter out empty lines and get output
-    const output = parts.filter((line) => line.trim()).join("\n");
+    // Extract output from Piston response
+    const output = result.run?.output || result.compile?.output || "";
+    const compileError = result.compile?.stderr || "";
+    const runtimeError = result.run?.stderr || "";
+    const stderr = compileError || runtimeError;
 
     return {
-      stdout: output || "",
-      stderr: "",
+      stdout: output.trim(),
+      stderr: stderr.trim(),
     };
   } catch (error) {
     return {
       stdout: "",
-      stderr: `Both execution methods failed: ${String(error)}`,
+      stderr: `Piston execution failed: ${String(error)}`,
     };
   }
 }
@@ -189,8 +145,8 @@ export async function POST(request: Request) {
 
     // If Java not available, use online API directly
     if (!javaAvailable) {
-      console.log("Java not found on system, using online execution...");
-      const result = await executeWithJDoodle(code, input);
+      console.log("Java not found on system, using Piston API...");
+      const result = await executeWithPiston(code, input);
       return Response.json({
         status: result.stderr ? "error" : "success",
         stdout: result.stdout,
@@ -224,10 +180,8 @@ export async function POST(request: Request) {
 
       if (compileResult.stderr || compileResult.stdout.includes("error")) {
         // Try online API if local compilation fails
-        console.log(
-          "Local Java compilation failed, trying online execution...",
-        );
-        const result = await executeWithJDoodle(code, input);
+        console.log("Local Java compilation failed, trying Piston API...");
+        const result = await executeWithPiston(code, input);
 
         return Response.json({
           status: result.stderr ? "error" : "success",
@@ -251,10 +205,10 @@ export async function POST(request: Request) {
     } catch (localError) {
       // If local execution fails completely, use online API
       console.log(
-        "Local Java execution failed, using online execution:",
+        "Local Java execution failed, using Piston API:",
         String(localError),
       );
-      const result = await executeWithJDoodle(code, input);
+      const result = await executeWithPiston(code, input);
 
       return Response.json({
         status: result.stderr ? "error" : "success",
