@@ -1,37 +1,73 @@
+export const runtime = "nodejs";
+
 import { spawn } from "child_process";
 import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
+import https from "https";
 
-// Piston API - Single, reliable, free execution engine
-async function executeWithPiston(
+// Piston API - Primary method everywhere
+function executeWithPiston(
   code: string,
   input?: string,
 ): Promise<{ stdout: string; stderr: string }> {
-  const wrappedCode = code.includes("class Main")
-    ? code
-    : `public class Main {\n${code}\n}`;
+  return new Promise((resolve, reject) => {
+    const wrappedCode = code.includes("class Main")
+      ? code
+      : `public class Main {\n${code}\n}`;
 
-  const response = await fetch("https://api.piston.codes/v1/execute", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+    const payload = JSON.stringify({
       language: "java",
       version: "*",
       files: [{ name: "Main.java", content: wrappedCode }],
       stdin: input || "",
-    }),
+    });
+
+    const options = {
+      hostname: "api.piston.codes",
+      path: "/v1/execute",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(payload),
+      },
+      timeout: 30000,
+    };
+
+    const req = https.request(options, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+      res.on("end", () => {
+        try {
+          const result = JSON.parse(data);
+          const stdout = (
+            result.run?.output ||
+            result.compile?.output ||
+            ""
+          ).trim();
+          const stderr = (
+            result.compile?.stderr ||
+            result.run?.stderr ||
+            ""
+          ).trim();
+          resolve({ stdout, stderr });
+        } catch (err) {
+          reject(new Error("Invalid response from Piston"));
+        }
+      });
+    });
+
+    req.on("error", (err) => reject(err));
+    req.on("timeout", () => {
+      req.destroy();
+      reject(new Error("Piston API timeout"));
+    });
+
+    req.write(payload);
+    req.end();
   });
-
-  if (!response.ok) {
-    throw new Error(`Piston API error: ${response.status}`);
-  }
-
-  const result = await response.json();
-  const stdout = (result.run?.output || result.compile?.output || "").trim();
-  const stderr = (result.compile?.stderr || result.run?.stderr || "").trim();
-
-  return { stdout, stderr };
 }
 
 function executeCommand(
