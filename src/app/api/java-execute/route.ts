@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { join } from "path";
+import { tmpdir } from "os";
 
 function executeCommand(
   command: string,
@@ -43,8 +44,17 @@ export async function POST(request: Request) {
   try {
     const { code, input } = await request.json();
 
-    // Create temporary directory
-    const tmpDir = mkdtempSync("java-exec-");
+    // Create temporary directory with fallback for read-only environments
+    let tmpDir: string;
+    try {
+      tmpDir = mkdtempSync(join(tmpdir(), "java-exec-"));
+    } catch (error) {
+      // Fallback for mobile/read-only environments
+      tmpDir = join(
+        "/tmp",
+        `java-exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      );
+    }
 
     try {
       // Save file
@@ -79,7 +89,11 @@ export async function POST(request: Request) {
       });
     } finally {
       // Clean up
-      rmSync(tmpDir, { recursive: true, force: true });
+      try {
+        rmSync(tmpDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors on read-only systems
+      }
     }
   } catch (error) {
     return Response.json(
