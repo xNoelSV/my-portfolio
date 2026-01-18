@@ -1,0 +1,106 @@
+---
+title: 242. Valid Anagram
+difficulty: easy
+tags:
+  - HashMap
+  - Sorting
+  - String
+---
+
+## Problem
+
+Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
+
+An anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+## Explanation
+
+### First pass: brute force with sorting
+
+My first idea was to check if the two strings have the same characters in the same quantities by sorting them. If both strings are anagrams, their sorted versions should be identical. I start by checking if they have different lengths—if they do, they can't be anagrams. Then I convert each string to a character array, sort both arrays, and compare if they're equal. This works and is simple to understand, but sorting takes O(n log n) time due to the sorting algorithm.
+
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) return false;
+
+        char[] sChars = s.toCharArray();
+        char[] tChars = t.toCharArray();
+
+        java.util.Arrays.sort(sChars);
+        java.util.Arrays.sort(tChars);
+
+        return java.util.Arrays.equals(sChars, tChars);
+    }
+}
+```
+
+### Final pass: HashMap for character frequency
+
+To avoid the overhead of sorting, I switched to counting the frequency of each character in both strings using two `HashMap`s. I iterate through both strings at the same time, incrementing or initializing the count for each character. Once I've counted all characters, I compare if both maps are equal. If they are, both strings have the exact same characters with the same frequencies, meaning they're anagrams. This approach is more efficient with O(n) time complexity since I only iterate through each string once.
+
+**Time:** O(n)  
+**Space:** O(1) - at most 26 lowercase letters in the HashMaps
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) return false;
+
+        java.util.Map<Character, Integer> lettersOfWord1 = new java.util.HashMap<>();
+        java.util.Map<Character, Integer> lettersOfWord2 = new java.util.HashMap<>();
+        int n = s.length();
+
+        for (int i = 0; i < n; i++) {
+            if (lettersOfWord1.containsKey(s.charAt(i))){
+                lettersOfWord1.replace(s.charAt(i), lettersOfWord1.get(s.charAt(i)) + 1);
+            } else {
+                lettersOfWord1.put(s.charAt(i), 1);
+            }
+
+            if (lettersOfWord2.containsKey(t.charAt(i))){
+                lettersOfWord2.replace(t.charAt(i), lettersOfWord2.get(t.charAt(i)) + 1);
+            } else {
+                lettersOfWord2.put(t.charAt(i), 1);
+            }
+        }
+
+        return lettersOfWord1.equals(lettersOfWord2);
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "true",
+      params: "s = \"anagram\", t = \"nagaram\"",
+      call: `System.out.println(sol.isAnagram("anagram", "nagaram"));`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "false",
+      params: "s = \"rat\", t = \"car\"",
+      call: `System.out.println(sol.isAnagram("rat", "car"));`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "true",
+      params: "s = \"listen\", t = \"silent\"",
+      call: `System.out.println(sol.isAnagram("listen", "silent"));`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "false",
+      params: "s = \"a\", t = \"b\"",
+      call: `System.out.println(sol.isAnagram("a", "b"));`,
+    },
+    {
+      id: "Test 5",
+      expectedOutput: "true",
+      params: "s = \"ab\", t = \"ba\"",
+      call: `System.out.println(sol.isAnagram("ab", "ba"));`,
+},
+]}
+/>
