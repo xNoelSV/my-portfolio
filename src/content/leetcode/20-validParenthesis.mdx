@@ -1,0 +1,101 @@
+---
+title: 20. Valid Parentheses
+difficulty: easy
+tags:
+  - Stack
+  - String
+---
+
+## Problem
+
+Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
+
+An input string is valid if:
+
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+3. Every close bracket has a corresponding open bracket of the same type.
+
+## Explanation
+
+### Final solution: Stack for matching pairs
+
+I use a `Stack` to keep track of opening brackets as I encounter them. First, I perform a quick check: if the string length is odd, it's impossible to have valid pairs, so I return `false` immediately. Then I iterate through each character. When I find an opening bracket (`'('`, `'{'`, or `'['`), I push it onto the stack for later matching. When I encounter a closing bracket (`')'`, `'}'`, or `']'`), I check if the top of the stack contains the corresponding opening bracket. If it doesn't match (for example, finding `']'` when the stack has `'('` on top), the string is invalid and I return `false`. If it matches, I pop the opening bracket from the stack. After processing all characters, if every opening bracket had a matching closing bracket in the correct order, the stack should be empty and the string is valid. This approach leverages the Last-In-First-Out (LIFO) nature of stacks, which naturally handles the nested structure of brackets. The time complexity is O(n) since I process each character once, and the space complexity is O(n) in the worst case when all characters are opening brackets.
+
+**Time:** O(n)  
+**Space:** O(n)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public boolean isValid(String s) {
+        
+        java.util.Stack<Character> stack = new java.util.Stack<>();
+        int inputLength = s.length();
+
+        if (inputLength % 2 != 0) return false;
+
+        for (int position = 0; position < inputLength; position++) {
+            if (
+                s.charAt(position) == '(' ||
+                s.charAt(position) == '{' ||
+                s.charAt(position) == '['
+            ) {
+                stack.push(s.charAt(position));
+            } else {
+                if (stack.isEmpty()) return false;
+
+                if (
+                    (s.charAt(position) == ']' && stack.peek() != '[') ||
+                    (s.charAt(position) == '}' && stack.peek() != '{') ||
+                    (s.charAt(position) == ')' && stack.peek() != '(')
+                ) return false;
+                else stack.pop();
+            }
+        }
+
+        return stack.isEmpty();
+
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "true",
+      params: 's = "()"',
+      call: `System.out.println(sol.isValid("()"));`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "true",
+      params: 's = "()[]{}"',
+      call: `System.out.println(sol.isValid("()[]{}"));`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "false",
+      params: 's = "(]"',
+      call: `System.out.println(sol.isValid("(]"));`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "true",
+      params: 's = "{[]}"',
+      call: `System.out.println(sol.isValid("{[]}"));`,
+    },
+    {
+      id: "Test 5",
+      expectedOutput: "false",
+      params: 's = "([)]"',
+      call: `System.out.println(sol.isValid("([)]"));`,
+    },
+    {
+      id: "Test 6",
+      expectedOutput: "false",
+      params: 's = "]"',
+      call: `System.out.println(sol.isValid("]"));`,
+},
+]}
+/>
