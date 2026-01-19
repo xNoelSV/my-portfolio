@@ -1,0 +1,106 @@
+---
+title: 704. Binary Search
+difficulty: easy
+tags:
+  - Binary Search
+  - Array
+---
+
+## Problem
+
+Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. If `target` exists, then return its index. Otherwise, return `-1`.
+
+You must write an algorithm with O(log n) runtime complexity.
+
+## Explanation
+
+### First pass: recursive binary search
+
+My first approach was to implement binary search using recursion. The main `search` method initializes the pointers and calls a helper recursive function `solutionRecursive`. This helper method follows the classic binary search logic but uses recursion. The base case is when `left > right`, meaning we've exhausted our search space and return `-1`. If the middle element matches the target, I return its index. Otherwise, I recursively search either the right half (if `nums[middle] < target`) or the left half (if `nums[middle] > target`). Each recursive call narrows down the search space by half. While this solution has O(log n) time complexity, it uses O(log n) space due to the recursive call stack, which can be a concern for very large arrays.
+
+**Time:** O(log n)  
+**Space:** O(log n) - recursive call stack
+
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int middle = 0;
+
+        return solutionRecursive(nums, target, left, middle, right);
+    }
+
+    int solutionRecursive(int[] nums, int target, int left, int middle, int right) {
+        if (left > right) return -1;
+
+        middle = left + (right - left) / 2;
+
+        if (nums[middle] == target) return middle;
+
+        if (nums[middle] < target) return solutionRecursive(nums, target, middle + 1, middle, right);
+        else return solutionRecursive(nums, target, left, middle, middle - 1);
+    }
+}
+```
+
+### Final pass: iterative binary search
+
+To improve space efficiency, I switched to the classic iterative binary search. I use two pointers, `left` and `right`, to track the search range. In each iteration, I calculate the middle index as `left + (right - left) / 2` to avoid potential integer overflow. If the middle element matches the target, I return its index immediately. If the middle element is smaller than the target, I know the target must be in the right half, so I move `left` to `middle + 1`. Otherwise, the target is in the left half, so I move `right` to `middle - 1`. I keep repeating this process until `left` exceeds `right`, which means the target doesn't exist in the array. This solution is more efficient with O(log n) time complexity and O(1) space since I'm only using a few variables, making it the preferred approach in practice.
+
+**Time:** O(log n)  
+**Space:** O(1)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left <= right) {
+            int middle = left + (right - left) / 2;
+
+            if (nums[middle] == target) return middle;
+            else if (nums[middle] < target) left = middle + 1;
+            else right = middle - 1;
+        }
+
+        return -1;
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "4",
+      params: "nums = [-1,0,3,5,9,12], target = 9",
+      call: `System.out.println(sol.search(new int[]{-1,0,3,5,9,12}, 9));`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "-1",
+      params: "nums = [-1,0,3,5,9,12], target = 2",
+      call: `System.out.println(sol.search(new int[]{-1,0,3,5,9,12}, 2));`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "0",
+      params: "nums = [5], target = 5",
+      call: `System.out.println(sol.search(new int[]{5}, 5));`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "-1",
+      params: "nums = [5], target = -5",
+      call: `System.out.println(sol.search(new int[]{5}, -5));`,
+    },
+    {
+      id: "Test 5",
+      expectedOutput: "2",
+      params: "nums = [1,2,3,4,5], target = 3",
+      call: `System.out.println(sol.search(new int[]{1,2,3,4,5}, 3));`,
+},
+]}
+/>
