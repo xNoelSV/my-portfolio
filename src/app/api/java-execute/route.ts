@@ -1,174 +1,77 @@
 export const runtime = "nodejs";
 
-import { spawn } from "child_process";
-import { writeFileSync, mkdtempSync, rmSync } from "fs";
-import { join } from "path";
-import { tmpdir } from "os";
-import https from "https";
-
-// Piston API - Primary method everywhere
-function executeWithPiston(
+// Try multiple free compiler APIs with fallback
+async function executeWithCompilerAPI(
   code: string,
   input?: string,
 ): Promise<{ stdout: string; stderr: string }> {
-  return new Promise((resolve, reject) => {
-    const wrappedCode = code.includes("class Main")
-      ? code
-      : `public class Main {\n${code}\n}`;
+  // Code is already wrapped with Main class from the frontend
+  const wrappedCode = code;
 
-    const payload = JSON.stringify({
-      language: "java",
-      version: "*",
-      files: [{ name: "Main.java", content: wrappedCode }],
-      stdin: input || "",
-    });
-
-    const options = {
-      hostname: "api.piston.codes",
-      path: "/v1/execute",
+  // Try Piston API first (using fetch for better compatibility)
+  try {
+    const response = await fetch("https://emkc.org/api/v2/piston/execute", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(payload),
       },
-      timeout: 30000,
-    };
-
-    const req = https.request(options, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk;
-      });
-      res.on("end", () => {
-        try {
-          const result = JSON.parse(data);
-          const stdout = (
-            result.run?.output ||
-            result.compile?.output ||
-            ""
-          ).trim();
-          const stderr = (
-            result.compile?.stderr ||
-            result.run?.stderr ||
-            ""
-          ).trim();
-          resolve({ stdout, stderr });
-        } catch (err) {
-          reject(new Error("Invalid response from Piston"));
-        }
-      });
+      body: JSON.stringify({
+        language: "java",
+        version: "*",
+        files: [{ name: "Main.java", content: wrappedCode }],
+        stdin: input || "",
+      }),
     });
 
-    req.on("error", (err) => reject(err));
-    req.on("timeout", () => {
-      req.destroy();
-      reject(new Error("Piston API timeout"));
-    });
-
-    req.write(payload);
-    req.end();
-  });
-}
-
-function executeCommand(
-  command: string,
-  args: string[],
-  input?: string,
-): Promise<{ stdout: string; stderr: string }> {
-  return new Promise((resolve) => {
-    const proc = spawn(command, args, {
-      timeout: 10000,
-      shell: true,
-    });
-
-    let stdout = "";
-    let stderr = "";
-
-    proc.stdout?.on("data", (data) => {
-      stdout += data.toString();
-    });
-
-    proc.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    proc.on("close", () => {
-      resolve({ stdout, stderr });
-    });
-
-    proc.on("error", (error) => {
-      resolve({ stdout, stderr: error.message });
-    });
-
-    if (input) {
-      proc.stdin?.write(input);
+    if (!response.ok) {
+      throw new Error(`Piston API returned ${response.status}`);
     }
-    proc.stdin?.end();
-  });
-}
 
-function isJavaAvailable(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const proc = spawn("javac", ["-version"], {
-      timeout: 5000,
-      shell: true,
-    });
+    const result = await response.json();
+    const stdout = (result.run?.output || result.compile?.output || "").trim();
+    const stderr = (result.compile?.stderr || result.run?.stderr || "").trim();
 
-    proc.on("error", () => resolve(false));
-    proc.on("close", (code) => resolve(code === 0));
-    setTimeout(() => resolve(false), 5000);
-  });
+    return { stdout, stderr };
+  } catch (pistonError) {
+    console.error("Piston API failed:", pistonError);
+
+    // Fallback to Wandbox API (another free option)
+    try {
+      const response = await fetch("https://wandbox.org/api/compile.json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          compiler: "openjdk-head",
+          code: wrappedCode,
+          stdin: input || "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Wandbox API returned ${response.status}`);
+      }
+
+      const result = await response.json();
+      return {
+        stdout: (result.program_output || "").trim(),
+        stderr: (result.program_error || result.compiler_error || "").trim(),
+      };
+    } catch (wandboxError) {
+      console.error("Wandbox API failed:", wandboxError);
+      throw new Error(
+        `All compiler APIs failed. Piston: ${pistonError}, Wandbox: ${wandboxError}`,
+      );
+    }
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const { code, input } = await request.json();
 
-    // Try local Java first
-    if (await isJavaAvailable()) {
-      let tmpDir: string;
-      try {
-        tmpDir = mkdtempSync(join(tmpdir(), "java-exec-"));
-      } catch {
-        tmpDir = join(tmpdir(), `java-exec-${Date.now()}`);
-      }
-
-      try {
-        const javaFile = join(tmpDir, "Main.java");
-        writeFileSync(javaFile, code);
-
-        const compileResult = await executeCommand("javac", [javaFile]);
-        if (compileResult.stderr && !compileResult.stderr.includes("warning")) {
-          // Compilation error, fall back to Piston
-          const result = await executeWithPiston(code, input);
-          return Response.json({
-            status: result.stderr ? "error" : "success",
-            stdout: result.stdout,
-            stderr: result.stderr,
-          });
-        }
-
-        const runResult = await executeCommand(
-          "java",
-          ["-cp", tmpDir, "Main"],
-          input,
-        );
-        return Response.json({
-          status: "success",
-          stdout: runResult.stdout,
-          stderr: runResult.stderr,
-        });
-      } finally {
-        try {
-          rmSync(tmpDir, { recursive: true, force: true });
-        } catch {
-          // ignore
-        }
-      }
-    }
-
-    // Use Piston API in production or when Java not available
-    const result = await executeWithPiston(code, input);
+    const result = await executeWithCompilerAPI(code, input);
     return Response.json({
       status: result.stderr ? "error" : "success",
       stdout: result.stdout,
@@ -179,7 +82,7 @@ export async function POST(request: Request) {
       {
         status: "error",
         stdout: "",
-        stderr: `Error: ${String(error)}`,
+        stderr: `Unable to execute code: ${String(error)}. Please check your internet connection.`,
       },
       { status: 500 },
     );

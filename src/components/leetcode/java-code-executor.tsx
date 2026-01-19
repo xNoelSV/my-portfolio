@@ -53,15 +53,20 @@ export function JavaCodeExecutor({
     try {
       for (const testCase of testCases) {
         try {
-          // Automatically add Main class
-          const fullCode = `${code}
+          // Remove 'public' from Solution class and add Main class FIRST
+          const solutionCode = code.replace(
+            /public\s+class\s+Solution/g,
+            "class Solution",
+          );
 
-public class Main {
+          const fullCode = `public class Main {
     public static void main(String[] args) {
         Solution sol = new Solution();
         ${testCase.call}
     }
-}`;
+}
+
+${solutionCode}`;
 
           const response = await fetch("/api/java-execute", {
             method: "POST",
