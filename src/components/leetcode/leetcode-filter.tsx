@@ -2,6 +2,7 @@
 
 import { SearchInput } from "@/components/ui/search-input";
 import { CustomRadio, CustomCheckbox } from "@/components/ui/radio-checkbox";
+import { useState } from "react";
 
 type Props = {
   selectedDifficulty: string | null;
@@ -19,6 +20,11 @@ export default function LeetCodeFilters({
   allTags,
 }: Props) {
   const difficulties = ["easy", "medium", "hard"];
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  // Sort tags alphabetically
+  const sortedTags = [...allTags].sort((a, b) => a.localeCompare(b));
+  const displayedTags = showAllTags ? sortedTags : sortedTags.slice(0, 10);
 
   function toggleTag(tag: string) {
     if (selectedTags.includes(tag)) {
@@ -66,7 +72,7 @@ export default function LeetCodeFilters({
       <div>
         <h4 className="font-semibold mb-2 text-lg md:text-sm">Type</h4>
         <div className="space-y-2">
-          {allTags.map((tag) => (
+          {displayedTags.map((tag) => (
             <CustomCheckbox
               key={tag}
               id={`tag-${tag}`}
@@ -76,6 +82,15 @@ export default function LeetCodeFilters({
             />
           ))}
         </div>
+        {sortedTags.length > 10 && (
+          <button
+            type="button"
+            onClick={() => setShowAllTags(!showAllTags)}
+            className="mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors underline focus:outline-none"
+          >
+            {showAllTags ? "Show less..." : "More types..."}
+          </button>
+        )}
       </div>
 
       {(selectedDifficulty || selectedTags.length > 0) && (

@@ -6,6 +6,9 @@ import { ChevronRight } from "lucide-react";
 import { LeetCode } from "contentlayer/generated";
 import LeetCodeGrid from "@/components/leetcode/leetcode-grid";
 import LeetCodeFilters from "@/components/leetcode/leetcode-filter";
+import { Pagination } from "@/components/pagination/pagination";
+
+const PROBLEMS_PER_PAGE = 10;
 
 type Props = {
   problems: LeetCode[];
@@ -21,7 +24,7 @@ export default function LeetCodeContent({
   page = 1,
 }: Props) {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(
-    null
+    null,
   );
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -49,6 +52,11 @@ export default function LeetCodeContent({
       return true;
     });
   }, [selectedDifficulty, selectedTags, problems, searchQuery]);
+
+  const totalPages = Math.ceil(filteredProblems.length / PROBLEMS_PER_PAGE);
+  const startIndex = (page - 1) * PROBLEMS_PER_PAGE;
+  const endIndex = startIndex + PROBLEMS_PER_PAGE;
+  const paginatedProblems = filteredProblems.slice(startIndex, endIndex);
 
   return (
     <div className="container py-6">
@@ -142,7 +150,16 @@ export default function LeetCodeContent({
               </p>
             </div>
           ) : (
-            <LeetCodeGrid problems={filteredProblems} />
+            <>
+              <LeetCodeGrid problems={paginatedProblems} />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  basePath="/leetcode"
+                />
+              )}
+            </>
           )}
         </div>
       </div>
