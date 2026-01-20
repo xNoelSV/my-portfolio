@@ -10,7 +10,7 @@ export const siteMetadata = {
   ],
   social: {
     email: "noelsava25@gmail.com",
-    linkedinLink: `https://www.linkedin.com/in/noel-sariñena-varela-5b08bb262`,
+    linkedinLink: `https://www.linkedin.com/in/noel-sariñena-varela`,
     githubLink: `https://github.com/xnoelsv`,
   },
   repo: `https://github.com/xnoelsv/my-portfolio`,

@@ -8,7 +8,7 @@ export const SOCIALS = [
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/noel-sariñena-varela-5b08bb262",
+    href: "https://www.linkedin.com/in/noel-sariñena-varela",
     icon: LinkedInIcon,
   },
 ];
