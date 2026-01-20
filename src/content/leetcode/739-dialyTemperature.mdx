@@ -1,0 +1,126 @@
+---
+title: 739. Daily Temperatures
+difficulty: medium
+tags:
+  - Brute Force
+  - Two Loops
+  - Community Solution
+  - Array
+---
+
+## Problem
+
+Given an array of integers `temperatures` that represents the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the `i`th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i]` as `0`.
+
+## Explanation
+
+I know there is a more optimized way to solve this with a monotonic stack in O(n), but this portfolio is where I document my own first passes and what helped me learn. Here I keep my original two-loop solution because it was the way I reasoned through the problem before discovering the optimized approach.
+
+### My approach: look ahead with nested loops
+
+For each day `i`, I scan forward day by day until I find a warmer temperature. I track how many steps I move (`counter`). If I find a warmer day, I store that distance in `solution[i]`. If I reach the end without finding one, `solution[i]` stays `0`. I added quick guards for empty and single-element inputs. This method is simple to read and matches how I first thought about the problem, even though it is less efficient than the stack-based solution.
+
+**Time:** O(n^2) in the worst case (e.g., strictly decreasing temperatures)  
+**Space:** O(1) extra beyond the output array
+
+## Solution
+
+<JavaCodeExecutor
+	  initialCode={`class Solution {
+		public int[] dailyTemperatures(int[] temperatures) {
+			int counter = 0;
+			int inputLength = temperatures.length;
+			boolean isFound = false;
+			int[] solution = new int[inputLength];
+
+    		if (inputLength == 0) return new int[]{};
+    		if (inputLength == 1) return new int[]{0};
+
+    		for (int i = 0; i < inputLength - 1; i++) {
+    			counter = 1;
+    			isFound = false;
+
+    			for (int j = i + 1; j < inputLength && !isFound; j++) {
+    				if (temperatures[i] < temperatures[j]) {
+    					isFound = true;
+    					solution[i] = counter;
+    				}
+    				counter++;
+    			}
+
+    			if (!isFound) solution[i] = 0;
+    		}
+
+    		solution[inputLength - 1] = 0; // last day has no future days
+    		return solution;
+    	}
+    }`}
+    testCases={[
+    	{
+    		id: "Test 1",
+    		expectedOutput: "1,1,4,2,1,1,0,0",
+    		params: "temperatures = [73,74,75,71,69,72,76,73]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{73,74,75,71,69,72,76,73});
+    			System.out.printf("%d,%d,%d,%d,%d,%d,%d,%d", res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);`,
+    	},
+    	{
+    		id: "Test 2",
+    		expectedOutput: "1,1,1,0",
+    		params: "temperatures = [30,40,50,60]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{30,40,50,60});
+    			System.out.printf("%d,%d,%d,%d", res[0], res[1], res[2], res[3]);`,
+    	},
+    	{
+    		id: "Test 3",
+    		expectedOutput: "0,0,0",
+    		params: "temperatures = [30,30,30]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{30,30,30});
+    			System.out.printf("%d,%d,%d", res[0], res[1], res[2]);`,
+    	},
+    	{
+    		id: "Test 4",
+    		expectedOutput: "2,1,0",
+    		params: "temperatures = [60,58,70]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{60,58,70});
+    			System.out.printf("%d,%d,%d", res[0], res[1], res[2]);`,
+    	},
+    	{
+    		id: "Test 5",
+    		expectedOutput: "0",
+    		params: "temperatures = [99]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{99});
+    			System.out.printf("%d", res[0]);`,
+    	},
+    	{
+    		id: "Test 6",
+    		expectedOutput: "1,0",
+    		params: "temperatures = [70,80]",
+    		call: `int[] res = sol.dailyTemperatures(new int[]{70,80});
+    			System.out.printf("%d,%d", res[0], res[1]);`,
+    	},
+    ]}
+
+/>
+
+## Optimized approach I found (not mine)
+
+This is the monotonic-stack solution I learned from a video (not my own idea). It runs in O(n) time by keeping indices in a stack that is strictly decreasing by temperature; when a warmer day appears, it resolves all cooler days on top of the stack.
+
+```java
+class Solution {
+	public int[] dailyTemperatures(int[] temperatures) {
+		java.util.Stack<Integer> stack = new java.util.Stack<>();
+		int[] result = new int[temperatures.length];
+
+		for (int i = 0; i < temperatures.length; i++) {
+			while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+				int idx = stack.pop();
+				result[idx] = i - idx;
+			}
+			stack.push(i);
+		}
+
+		return result;
+	}
+}
+```
