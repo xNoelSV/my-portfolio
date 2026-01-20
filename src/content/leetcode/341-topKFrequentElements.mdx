@@ -1,0 +1,104 @@
+---
+title: 347. Top K Frequent Elements
+difficulty: medium
+tags:
+  - HashMap
+  - Sorting
+  - Array
+---
+
+## Problem
+
+Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in any order.
+
+## Explanation
+
+### My approach: HashMap and stream sorting
+
+I solve this by first counting how many times each number appears, then sorting by frequency to pick the top `k`. I use a `HashMap` called `repeatedNums` to track each number and its count. As I iterate through the array, if a number already exists in the map, I increment its count; otherwise, I add it with a count of `1`. Once I have all the frequencies, I convert the map to a stream, sort it by value in descending order (most frequent first), and collect it back into a `LinkedHashMap` to preserve the sorted order. Finally, I iterate through the sorted map's keys, copying the first `k` elements into my result array. This approach is straightforward and readable, using Java streams to handle the sorting elegantly.
+
+**Time:** O(n log n) due to sorting the map entries  
+**Space:** O(n) for the HashMap and sorted map
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        
+        java.util.Map<Integer, Integer> repeatedNums = new java.util.HashMap<>(); // num, times repeated
+
+        for (int i = 0; i < nums.length; i++) {
+            if (repeatedNums.containsKey(nums[i])) {
+                repeatedNums.put(nums[i], repeatedNums.get(nums[i]) + 1);
+            } else {
+                repeatedNums.put(nums[i], 1);
+            }
+        }
+
+        java.util.Map<Integer, Integer> sortedMap = repeatedNums.entrySet()
+                .stream()
+                .sorted(java.util.Map.Entry.comparingByValue(java.util.Comparator.reverseOrder()))
+                .collect(java.util.stream.Collectors.toMap(
+                        java.util.Map.Entry::getKey,
+                        java.util.Map.Entry::getValue,
+                        (e1, e2) -> e1,  // Merge function
+                        java.util.LinkedHashMap::new));
+
+        int[] solution = new int[k];
+        int counter = 0;
+        for (int n : sortedMap.keySet()) {
+            solution[counter] = n;
+            counter++;
+            if (counter == k) break;
+        }
+        return solution;
+
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "1,2",
+      params: "nums = [1,1,1,2,2,3], k = 2",
+      call: `int[] res = sol.topKFrequent(new int[]{1,1,1,2,2,3}, 2);
+System.out.printf("%d,%d", res[0], res[1]);`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "1",
+      params: "nums = [1], k = 1",
+      call: `int[] res = sol.topKFrequent(new int[]{1}, 1);
+System.out.printf("%d", res[0]);`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "1,2,3",
+      params: "nums = [1,2,3], k = 3",
+      call: `int[] res = sol.topKFrequent(new int[]{1,2,3}, 3);
+System.out.printf("%d,%d,%d", res[0], res[1], res[2]);`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "4",
+      params: "nums = [4,4,4,1,2,3], k = 1",
+      call: `int[] res = sol.topKFrequent(new int[]{4,4,4,1,2,3}, 1);
+System.out.printf("%d", res[0]);`,
+    },
+    {
+      id: "Test 5",
+      expectedOutput: "5,10",
+      params: "nums = [5,5,5,10,10,15], k = 2",
+      call: `int[] res = sol.topKFrequent(new int[]{5,5,5,10,10,15}, 2);
+System.out.printf("%d,%d", res[0], res[1]);`,
+    },
+    {
+      id: "Test 6",
+      expectedOutput: "2,1",
+      params: "nums = [1,1,2,2,2,3], k = 2",
+      call: `int[] res = sol.topKFrequent(new int[]{1,1,2,2,2,3}, 2);
+System.out.printf("%d,%d", res[0], res[1]);`,
+},
+]}
+/>
