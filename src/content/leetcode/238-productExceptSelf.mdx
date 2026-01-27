@@ -1,0 +1,100 @@
+---
+title: 238. Product of Array Except Self
+difficulty: medium
+tags:
+  - Prefix Product
+  - Suffix Product
+  - Array
+---
+
+## Problem
+
+Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`. You must do this without using division and in O(n) time.
+
+## Explanation
+
+### First pass: double loops
+
+I first multiplied every combination with two nested loops, skipping the current index. This works but costs O(n^2) time.
+
+```java
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            int product = 1;
+            for (int j = 0; j < n; j++) {
+                if (j != i) product *= nums[j];
+            }
+            result[i] = product;
+        }
+
+        return result;
+    }
+}
+```
+
+### Final pass: prefix \* suffix
+
+To reach O(n), I precompute prefix products from the left and suffix products from the right in one output array. First loop stores the product of everything to the left of each index. Second loop walks backward, multiplying by a running suffix product so each position ends up with left \* right. This keeps extra space to O(1) beyond the output.
+
+**Time:** O(n)  
+**Space:** O(1) extra (output excluded)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] output = new int[n];
+
+        int prefix = 1;
+        for (int i = 0; i < n; i++) {
+            output[i] = prefix;
+            prefix *= nums[i];
+        }
+
+        int suffix = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            output[i] *= suffix;
+            suffix *= nums[i];
+        }
+
+        return output;
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "[24, 12, 8, 6]",
+      params: "nums = [1, 2, 3, 4]",
+      call: `int[] result = sol.productExceptSelf(new int[]{1, 2, 3, 4});
+System.out.println(java.util.Arrays.toString(result));`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "[120, 60, 40, 30, 24]",
+      params: "nums = [1, 2, 3, 4, 5]",
+      call: `int[] result = sol.productExceptSelf(new int[]{1, 2, 3, 4, 5});
+System.out.println(java.util.Arrays.toString(result));`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "[0, 0, 9, 0, 0]",
+      params: "nums = [-1, 1, 0, -3, 3]",
+      call: `int[] result = sol.productExceptSelf(new int[]{-1, 1, 0, -3, 3});
+System.out.println(java.util.Arrays.toString(result));`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "[0, 0]",
+      params: "nums = [0, 0]",
+      call: `int[] result = sol.productExceptSelf(new int[]{0, 0});
+System.out.println(java.util.Arrays.toString(result));`,
+},
+]}
+/>

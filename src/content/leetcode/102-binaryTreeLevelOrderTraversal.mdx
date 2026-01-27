@@ -1,0 +1,104 @@
+---
+title: 102. Binary Tree Level Order Traversal
+difficulty: medium
+tags:
+  - Binary Tree
+  - BFS
+  - Queue
+---
+
+## Problem
+
+Given the `root` of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level).
+
+## Explanation
+
+### Final solution: BFS with queue
+
+I use a `Queue` to traverse the tree level by level. First, I handle the empty tree edge case by returning an empty list immediately. Then I start by adding the root node to the queue. The key insight is to process nodes in complete levels: before processing each level, I capture the current queue size, which tells me exactly how many nodes are in that level. I then loop that many times, polling each node, recording its value, and adding its children (left first, then right) to the queue for the next level. After processing all nodes in a level, I add that level's list to my result. This continues until the queue is empty, meaning I've visited every node exactly once. The BFS approach naturally produces the level-order traversal because the queue maintains the "next nodes to visit" in the correct left-to-right, level-by-level order.
+
+**Time:** O(n)  
+**Space:** O(n)
+
+## Solution
+
+<JavaCodeExecutor
+  initialCode={`class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+class Solution {
+public java.util.List<java.util.List<Integer>> levelOrder(TreeNode root) {
+java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();
+
+        if (root == null) return result;
+
+        java.util.Queue<TreeNode> queue = new java.util.ArrayDeque<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            java.util.List<Integer> level = new java.util.ArrayList<>();
+
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode node = queue.poll();
+                level.add(node.val);
+
+                if (node.left != null) queue.offer(node.left);
+                if (node.right != null) queue.offer(node.right);
+            }
+
+            result.add(level);
+        }
+
+        return result;
+    }
+
+}`}
+  testCases={[
+    {
+      id: "Test 1",
+      expectedOutput: "[[3], [9, 20], [15, 7]]",
+      params: "root = [3, 9, 20, null, null, 15, 7]",
+      call: `TreeNode root = new TreeNode(3);
+root.left = new TreeNode(9);
+root.right = new TreeNode(20);
+root.right.left = new TreeNode(15);
+root.right.right = new TreeNode(7);
+System.out.println(sol.levelOrder(root));`,
+    },
+    {
+      id: "Test 2",
+      expectedOutput: "[[1]]",
+      params: "root = [1]",
+      call: `TreeNode root = new TreeNode(1);
+System.out.println(sol.levelOrder(root));`,
+    },
+    {
+      id: "Test 3",
+      expectedOutput: "[]",
+      params: "root = []",
+      call: `TreeNode root = null;
+System.out.println(sol.levelOrder(root));`,
+    },
+    {
+      id: "Test 4",
+      expectedOutput: "[[1], [2, 3], [4, 5]]",
+      params: "root = [1, 2, 3, 4, 5]",
+      call: `TreeNode root = new TreeNode(1);
+root.left = new TreeNode(2);
+root.right = new TreeNode(3);
+root.left.left = new TreeNode(4);
+root.left.right = new TreeNode(5);
+System.out.println(sol.levelOrder(root));`,
+},
+]}
+/>

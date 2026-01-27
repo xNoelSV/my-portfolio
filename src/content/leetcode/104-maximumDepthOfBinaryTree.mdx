@@ -1,0 +1,98 @@
+---
+title: 104. Maximum Depth of Binary Tree
+difficulty: easy
+tags:
+  - Binary Tree
+  - DFS
+  - Recursion
+---
+
+## Problem
+
+Given the `root` of a binary tree, return its maximum depth. A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+## Explanation
+
+### First pass: BFS by levels
+
+You can compute depth iteratively with a queue. Push the root, then repeatedly process the current level's nodes (captured by the queue size) and enqueue their children. Each full level processed increases the depth by one. This runs in O(n) time and O(n) space in the worst case.
+
+### Final pass: DFS recursion
+
+The recursive definition is concise: the depth of a node is `1 + max(depth(left), depth(right))`, with the base case being `0` for `null`. This visits each node once.
+
+**Time:** O(n)  
+**Space:** O(h) where `h` is tree height (worst-case O(n) for a skewed tree)
+
+## Solution
+
+<JavaCodeExecutor
+    initialCode={`class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+                this.val = val;
+                this.left = left;
+                this.right = right;
+        }
+}
+
+class Solution {
+public int maxDepth(TreeNode root) {
+if (root == null) return 0;
+int left = maxDepth(root.left);
+int right = maxDepth(root.right);
+return 1 + Math.max(left, right);
+}
+}`}
+    testCases={[
+        {
+            id: "Test 1",
+            expectedOutput: "3",
+            params: "root = [3, 9, 20, null, null, 15, 7]",
+            call: `TreeNode root = new TreeNode(3);
+root.left = new TreeNode(9);
+root.right = new TreeNode(20);
+root.right.left = new TreeNode(15);
+root.right.right = new TreeNode(7);
+System.out.println(sol.maxDepth(root));`,
+        },
+        {
+            id: "Test 2",
+            expectedOutput: "2",
+            params: "root = [1, null, 2]",
+            call: `TreeNode root = new TreeNode(1);
+root.right = new TreeNode(2);
+System.out.println(sol.maxDepth(root));`,
+        },
+        {
+            id: "Test 3",
+            expectedOutput: "0",
+            params: "root = []",
+            call: `TreeNode root = null;
+System.out.println(sol.maxDepth(root));`,
+        },
+        {
+            id: "Test 4",
+            expectedOutput: "1",
+            params: "root = [42]",
+            call: `TreeNode root = new TreeNode(42);
+System.out.println(sol.maxDepth(root));`,
+        },
+        {
+            id: "Test 5",
+            expectedOutput: "3",
+            params: "root = [1, 2, 3, 4, 5, 6, 7]",
+            call: `TreeNode root = new TreeNode(1);
+root.left = new TreeNode(2);
+root.right = new TreeNode(3);
+root.left.left = new TreeNode(4);
+root.left.right = new TreeNode(5);
+root.right.left = new TreeNode(6);
+root.right.right = new TreeNode(7);
+System.out.println(sol.maxDepth(root));`,
+},
+]}
+/>
