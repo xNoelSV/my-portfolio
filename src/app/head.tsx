@@ -5,6 +5,10 @@ export default function Head() {
   return (
     <>
       <link rel="icon" type="image/png" href="/_static/favicons/favicon.ico" />
+      <meta
+        name="google-site-verification"
+        content="R89I80pUJl1A5Ke1-oYKukhDvbnhFn9STfORzwLzFc8"
+      />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta
         name="theme-color"
