@@ -59,12 +59,27 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <Head />
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-Z4SHTH323J"
+      ></script>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-Z4SHTH323J');
+          `,
+        }}
+      />
+
       <body
         className={cn(
           `mx-auto min-h-screen max-w-3xl antialiased 
           text-black 
            dark:bg-zinc-950 dark:text-gray-100`,
-          roboto_flex.className
+          roboto_flex.className,
         )}
       >
         <ThemeProvider
